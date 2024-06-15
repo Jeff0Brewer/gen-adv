@@ -6,6 +6,7 @@ module.exports = {
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:react-hooks/recommended',
+        'plugin:import/recommended',
         'standard'
     ],
     ignorePatterns: ['dist'],
@@ -21,6 +22,21 @@ module.exports = {
             argsIgnorePattern: '^_',
             varsIgnorePattern: '^_',
             caughtErrorsIgnorePattern: '^_'
-        }]
+        }],
+        'import/order': [
+            'error',
+            {
+                groups: [
+                    'type',
+                    'builtin',
+                    'external',
+                    'internal',
+                    'parent',
+                    'sibling',
+                    'index',
+                    'object'
+                ]
+            }
+        ]
     }
 }
