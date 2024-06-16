@@ -27,11 +27,11 @@ async function getCompletion (messages: Message[]): Promise<string> {
 async function getItemizedCompletion (messages: Message[], retries: number = 0): Promise<string[]> {
     const completion = await getCompletion(messages)
     try {
-        // Parse items from numbered list.
+        // Parse items from numbered list, excluding lines not in numbered item.
         return completion
-            .replace(/\d*\./g, '')
             .split('\n')
-            .map(item => item.trim())
+            .filter(line => line.match(/^\d*\./))
+            .map(line => line.replace(/^\d*\./, '').trim())
     } catch {
         console.error(`Expected numbered list, recieved: \n${completion}`)
 
