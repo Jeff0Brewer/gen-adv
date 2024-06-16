@@ -3,7 +3,7 @@ type Message = {
     content: string
 }
 
-async function getCompletion (messages: Message[]): Promise<Message> {
+async function getCompletion (messages: Message[]): Promise<string> {
     const res = await fetch('/api/completion', {
         method: 'POST',
         cache: 'no-cache',
@@ -21,22 +21,34 @@ async function getCompletion (messages: Message[]): Promise<Message> {
         throw new Error(`Incomplete response: ${data}`)
     }
 
-    return data.message
+    return data.message.content
 }
 
-function itemsFromNumberedList (content: string): string[] {
+async function getItemizedCompletion (messages: Message[], retries: number = 0): Promise<string[]> {
+    const completion = await getCompletion(messages)
     try {
-        return content
+        // Parse items from numbered list.
+        return completion
             .replace(/\d*\./g, '')
             .split('\n')
             .map(item => item.trim())
     } catch {
-        throw new Error(`Expected numbered list, received:\n${content}`)
+        console.error(`Expected numbered list, recieved: \n${completion}`)
+
+        // Retry if completion not formatted as expected.
+        if (retries > 0) {
+            return getItemizedCompletion(messages, retries - 1)
+        }
+
+        // Error if retry limit exceeded.
+        throw new Error(
+            'Itemized completion exceeded retry limit, ensure prompt requires numbered output.'
+        )
     }
 }
 
 export type { Message }
 export {
     getCompletion,
-    itemsFromNumberedList
+    getItemizedCompletion
 }

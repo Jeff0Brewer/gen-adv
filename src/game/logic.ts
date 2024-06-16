@@ -1,7 +1,7 @@
-import { getCompletion, itemsFromNumberedList } from '../lib/openai'
+import { getItemizedCompletion } from '../lib/openai'
 
-async function genGenre (retries: number = 3): Promise<string> {
-    const { content } = await getCompletion([
+async function genGenre (): Promise<string> {
+    const options = await getItemizedCompletion([
         {
             role: 'system',
             content:
@@ -12,22 +12,14 @@ async function genGenre (retries: number = 3): Promise<string> {
             role: 'user',
             content: 'Can you provide 10 interesting genres for my RPG adventure game?'
         }
-    ])
+    ], 3)
 
-    try {
-        // Choose random option from list of choices to increase variability of genres.
-        const options = itemsFromNumberedList(content)
-        return options[Math.floor(Math.random() * options.length)]
-    } catch {
-        if (retries > 0) {
-            return genGenre(retries - 1)
-        }
-        throw new Error('Genre generation exceeded retry limit.')
-    }
+    // Choose random option from list of choices to increase variability of genres.
+    return options[Math.floor(Math.random() * options.length)]
 }
 
-async function initInventory (genre: string, retries: number = 1): Promise<string[]> {
-    const { content } = await getCompletion([
+async function initInventory (genre: string): Promise<string[]> {
+    const items = await getItemizedCompletion([
         {
             role: 'system',
             content:
@@ -39,16 +31,9 @@ async function initInventory (genre: string, retries: number = 1): Promise<strin
             role: 'user',
             content: 'Assign my player some items for the start of the game.'
         }
-    ])
+    ], 1)
 
-    try {
-        return itemsFromNumberedList(content)
-    } catch {
-        if (retries > 0) {
-            return initInventory(genre, retries - 1)
-        }
-        throw new Error('Inventory generation exceeded retry limit.')
-    }
+    return items
 }
 
 export {
