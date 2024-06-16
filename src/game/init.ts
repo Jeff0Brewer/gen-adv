@@ -5,7 +5,7 @@ async function genGenre (): Promise<string> {
         {
             role: 'system',
             content:
-                'Write your response as a numbered list, do not explain or respond in full sentences. ' +
+                'Write your response as a numbered list, do not explain or use full sentences. ' +
                 'Be highly creative and generate only unique answers.'
         },
         {
@@ -45,9 +45,8 @@ async function initPlayerState (genre: string): Promise<PlayerState> {
         {
             role: 'system',
             content:
-                'You are responsible for describing the condition of the player in an adventure game. ' +
-                'Given a description of a character, you will respond with only the details concerning their health.' +
-                'Respond with the most concise answer possible, do not label your description.'
+                'Given a description of a character in an adventure game, you will respond with only the details concerning their health.' +
+                'Respond with the most concise answer possible.'
         }, {
             role: 'user',
             content: description
@@ -66,7 +65,7 @@ async function initPlayerState (genre: string): Promise<PlayerState> {
             role: 'user',
             content: description
         }
-    ])
+    ], 1)
 
     const [status, inventory] = await Promise.all([statusPromise, inventoryPromise])
     return { status, inventory }

@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect, useState } from 'react'
-import { genGenre, initPlayerState } from '../game/logic'
+import { genGenre, initPlayerState } from '../game/init'
 import GameContext from '../hooks/game-context'
 
 type GameProviderProps = {
