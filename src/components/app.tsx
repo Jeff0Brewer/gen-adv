@@ -34,8 +34,8 @@ function InfoItem (
             </p>
             { typeof content === 'string' &&
                 <p>{content}</p> }
-            { Array.isArray(content) && content.map((x, i) =>
-                <p key={i}>{x}</p>) }
+            { Array.isArray(content) && content.map((item, i) =>
+                <p key={i}>{item}</p>) }
         </div>
     )
 }
