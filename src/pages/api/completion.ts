@@ -11,10 +11,7 @@ async function getCompletion (
 ): Promise<void> {
     const completion = await ai.chat.completions.create({
         model: 'gpt-3.5-turbo',
-        messages: [{
-            role: 'user',
-            content: 'hi'
-        }]
+        messages: req.body.messages
     })
 
     const message = completion.choices[0].message
