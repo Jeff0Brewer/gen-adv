@@ -1,4 +1,4 @@
-import { getItemizedCompletion } from '../lib/openai'
+import { getCompletion, getItemizedCompletion } from '../lib/openai'
 
 async function genGenre (): Promise<string> {
     const options = await getItemizedCompletion([
@@ -18,8 +18,24 @@ async function genGenre (): Promise<string> {
     return options[Math.floor(Math.random() * options.length)]
 }
 
+async function initStatus (genre: string): Promise<string> {
+    return getCompletion([
+        {
+            role: 'system',
+            content:
+                'You are responsible for realistically assigning the condition of the player in an adventure game. ' +
+                `This game's genre is ${genre}. ` +
+                'Only respond with descriptions of the player\'s current health and any persistent effects they may be experiencing. ' +
+                'Do not use full sentences. Do not directly mention the player or user in your description.'
+        }, {
+            role: 'user',
+            content: 'I want to start a new game, describe the initial condition of my player.'
+        }
+    ])
+}
+
 async function initInventory (genre: string): Promise<string[]> {
-    const items = await getItemizedCompletion([
+    return getItemizedCompletion([
         {
             role: 'system',
             content:
@@ -32,11 +48,10 @@ async function initInventory (genre: string): Promise<string[]> {
             content: 'Assign my player some items for the start of the game.'
         }
     ], 1)
-
-    return items
 }
 
 export {
     genGenre,
+    initStatus,
     initInventory
 }
