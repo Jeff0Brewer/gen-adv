@@ -33,11 +33,11 @@ async function genInventory (genre: string, retries: number = 1): Promise<string
             content:
                 'You are responsible for realistically allocating resources in an adventure game. ' +
                 `This game's genre is ${genre}. ` +
-                'Resource names should be short, specific, and only contain vital information. ' +
+                'Resource names should be short and only contain vital information. ' +
                 'Write your response as a numbered list, do not explain or respond in full sentences.'
         }, {
             role: 'user',
-            content: 'What items does my player have at the start of the game?'
+            content: 'Assign my player some items for the start of the game.'
         }
     ])
 
