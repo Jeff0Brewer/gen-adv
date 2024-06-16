@@ -1,23 +1,42 @@
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
-import { getCompletion } from '../lib/openai'
+import { getGenre } from '../game/logic'
 import styles from '../styles/app.module.css'
 
 function App (): ReactElement {
-    const [text, setText] = useState<string>('')
+    const [genre, setGenre] = useState<string | null>(null)
 
     useEffect(() => {
-        getCompletion(
-            [{ role: 'user', content: 'hi' }]
-        ).then(
-            ({ content }) => setText(content)
-        )
+        getGenre().then(genre => setGenre(genre))
     }, [])
 
     return (
-        <main className={styles.center}>
-            <p>{text}</p>
+        <main className={styles.app}>
+            <section className={styles.info}>
+                <InfoItem label={'genre'} content={genre} />
+            </section>
         </main>
+    )
+}
+
+type InfoItemProps = {
+    label: string,
+    content: string | string[] | null
+}
+
+function InfoItem (
+    { label, content }: InfoItemProps
+): ReactElement {
+    return (
+        <div>
+            <p className={styles.infoLabel}>
+                {label}
+            </p>
+            { typeof content === 'string' &&
+                <p>{content}</p> }
+            { Array.isArray(content) && content.map((x, i) =>
+                <p key={i}>{x}</p>) }
+        </div>
     )
 }
 

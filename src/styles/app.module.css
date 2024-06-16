@@ -1,7 +1,22 @@
-.center {
+.app {
     position: relative;
-    display: grid;
-    place-content: center;
     width: 100vw;
     height: 100vh;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-areas: "info main";
+}
+
+.info {
+    grid-area: info;
+    position: relative;
+    background-color: var(--color1);
+    padding: 20px;
+    font-size: 0.75rem;
+}
+
+.info-label {
+    text-transform: uppercase;
+    color: var(--text1);
+    margin-bottom: 5px;
 }

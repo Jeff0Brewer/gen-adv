@@ -3,7 +3,7 @@ type Message = {
     content: string
 }
 
-async function getCompletion (messages: Array<Message>): Promise<Message> {
+async function getCompletion (messages: Message[]): Promise<Message> {
     const res = await fetch('/api/completion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

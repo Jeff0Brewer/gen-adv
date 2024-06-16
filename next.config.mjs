@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
+    reactStrictMode: false,
     /* eslint-disable-next-line @typescript-eslint/explicit-function-return-type */
     webpack: (config) => {
         // camelCase style names from css modules

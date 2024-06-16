@@ -1,4 +1,8 @@
 :root {
+    --color0: #000;
+    --color1: #111;
+    --text0: #fff;
+    --text1: #ccc;
     --timing: 250ms ease;
 }
 
@@ -8,14 +12,9 @@
     padding: 0;
 }
 
-*:before, *:after {
-    display: block;
-    content: '';
-}
-
 html, body {
-    background-color: #000;
-    color: #fff;
+    background-color: var(--color0);
+    color: var(--text0);
     font-family: system-ui, sans-serif;
     overscroll-behavior-y: none;
 }
