@@ -46,7 +46,6 @@ async function initPlayerState (genre: string): Promise<PlayerState> {
             role: 'system',
             content:
                 'You are responsible for describing the condition of the player in an adventure game. ' +
-                `This game's genre is ${genre}. ` +
                 'Given a description of a character, you will respond with only the details concerning their health.' +
                 'Respond with the most concise answer possible.'
         }, {
@@ -60,11 +59,9 @@ async function initPlayerState (genre: string): Promise<PlayerState> {
         {
             role: 'system',
             content:
-                'You are responsible for tracking the items a player has in an advendure game. ' +
-                `This game's genre is ${genre}. ` +
-                'Given a description of a character, you will respond with only a list of the items they have. ' +
+                'Given a description of a character in an adventure game, you will respond with a list of items in their inventory. ' +
                 'Item names should be as short as possible. ' +
-                'Only respond with a numbered list, do not explain or respond in full sentences.'
+                'Respond with a numbered list, do not explain or use full sentences.'
         }, {
             role: 'user',
             content: description
