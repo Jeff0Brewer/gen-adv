@@ -47,7 +47,7 @@ async function initPlayerState (genre: string): Promise<PlayerState> {
             content:
                 'You are responsible for describing the condition of the player in an adventure game. ' +
                 'Given a description of a character, you will respond with only the details concerning their health.' +
-                'Respond with the most concise answer possible.'
+                'Respond with the most concise answer possible, do not label your description.'
         }, {
             role: 'user',
             content: description
