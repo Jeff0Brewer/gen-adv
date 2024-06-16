@@ -1,0 +1,38 @@
+:root {
+    --timing: 250ms ease;
+}
+
+*, *:before, *:after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+*:before, *:after {
+    display: block;
+    content: '';
+}
+
+html, body {
+    background-color: #000;
+    color: #fff;
+    font-family: system-ui, sans-serif;
+    overscroll-behavior-y: none;
+}
+
+input[type="text"], textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    border: none;
+    background-color: transparent;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
