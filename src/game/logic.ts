@@ -26,7 +26,7 @@ async function genGenre (retries: number = 3): Promise<string> {
     }
 }
 
-async function genInventory (genre: string, retries: number = 1): Promise<string[]> {
+async function initInventory (genre: string, retries: number = 1): Promise<string[]> {
     const { content } = await getCompletion([
         {
             role: 'system',
@@ -45,7 +45,7 @@ async function genInventory (genre: string, retries: number = 1): Promise<string
         return itemsFromNumberedList(content)
     } catch {
         if (retries > 0) {
-            return genInventory(genre, retries - 1)
+            return initInventory(genre, retries - 1)
         }
         throw new Error('Inventory generation exceeded retry limit.')
     }
@@ -53,5 +53,5 @@ async function genInventory (genre: string, retries: number = 1): Promise<string
 
 export {
     genGenre,
-    genInventory
+    initInventory
 }
