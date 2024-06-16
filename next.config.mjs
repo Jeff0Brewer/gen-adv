@@ -1,6 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-};
+    reactStrictMode: true,
+    /* eslint-disable-next-line @typescript-eslint/explicit-function-return-type */
+    webpack: (config) => {
+        // camelCase style names from css modules
+        config.module.rules
+            .find(({ oneOf }) => !!oneOf).oneOf
+            .filter(({ use }) => JSON.stringify(use)?.includes('css-loader'))
+            .reduce((acc, { use }) => acc.concat(use), [])
+            .forEach(({ options }) => {
+                if (options.modules) {
+                    options.modules.exportLocalsConvention = 'camelCase'
+                }
+            })
 
-export default nextConfig;
+        return config
+    }
+}
+
+export default nextConfig
