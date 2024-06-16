@@ -3,7 +3,7 @@
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 220px 1fr;
     grid-template-areas: "info main";
 }
 
@@ -13,6 +13,9 @@
     background-color: var(--color1);
     padding: 20px;
     font-size: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .info-label {

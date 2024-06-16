@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect, useState } from 'react'
-import { getGenre } from '../game/logic'
+import { genGenre, genInventory } from '../game/logic'
 import GameContext from '../hooks/game-context'
 
 type GameProviderProps = {
@@ -11,13 +11,23 @@ function GameProvider (
     { children }: GameProviderProps
 ): ReactElement {
     const [genre, setGenre] = useState<string | null>(null)
+    const [inventory, setInventory] = useState<string[] | null>(null)
 
     useEffect(() => {
-        getGenre().then(setGenre)
+        genGenre().then(setGenre)
     }, [])
 
+    useEffect(() => {
+        if (genre) {
+            genInventory(genre).then(setInventory)
+        }
+    }, [genre])
+
     return (
-        <GameContext.Provider value={{ genre }}>
+        <GameContext.Provider value={{
+            genre,
+            inventory
+        }}>
             {children}
         </GameContext.Provider>
     )

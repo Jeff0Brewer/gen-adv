@@ -3,12 +3,13 @@ import { useGameContext } from '../hooks/game-context'
 import styles from '../styles/app.module.css'
 
 function App (): ReactElement {
-    const { genre } = useGameContext()
+    const { genre, inventory } = useGameContext()
 
     return (
         <main className={styles.app}>
             <section className={styles.info}>
                 <InfoItem label={'genre'} content={genre} />
+                <InfoItem label={'inventory'} content={inventory} />
             </section>
         </main>
     )

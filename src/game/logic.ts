@@ -1,16 +1,16 @@
 import { getCompletion, itemsFromNumberedList } from '../lib/openai'
 
-const DEPTH_LIMIT = 3
-
-async function getGenre (depth: number = 0): Promise<string> {
+async function genGenre (retries: number = 3): Promise<string> {
     const { content } = await getCompletion([
         {
             role: 'system',
-            content: 'Do not explain or respond in full sentences. Be highly creative and generate only unique answers.'
+            content:
+                'Write your response as a numbered list, do not explain or respond in full sentences. ' +
+                'Be highly creative and generate only unique answers.'
         },
         {
             role: 'user',
-            content: 'Can you provide a numbered list of 10 interesting genres for my RPG adventure game?'
+            content: 'Can you provide 10 interesting genres for my RPG adventure game?'
         }
     ])
 
@@ -19,15 +19,39 @@ async function getGenre (depth: number = 0): Promise<string> {
         const options = itemsFromNumberedList(content)
         return options[Math.floor(Math.random() * options.length)]
     } catch {
-        // Retry generation if received content cannot be parsed.
-        if (depth < DEPTH_LIMIT) {
-            return getGenre(depth + 1)
+        if (retries > 0) {
+            return genGenre(retries - 1)
         }
-        // Error if retry limit exceeded.
         throw new Error('Genre generation exceeded retry limit.')
     }
 }
 
+async function genInventory (genre: string, retries: number = 1): Promise<string[]> {
+    const { content } = await getCompletion([
+        {
+            role: 'system',
+            content:
+                'You are responsible for realistically allocating resources in an adventure game. ' +
+                `This game's genre is ${genre}. ` +
+                'Resource names should be short, specific, and only contain vital information. ' +
+                'Write your response as a numbered list, do not explain or respond in full sentences.'
+        }, {
+            role: 'user',
+            content: 'What items does my player have at the start of the game?'
+        }
+    ])
+
+    try {
+        return itemsFromNumberedList(content)
+    } catch {
+        if (retries > 0) {
+            return genInventory(genre, retries - 1)
+        }
+        throw new Error('Inventory generation exceeded retry limit.')
+    }
+}
+
 export {
-    getGenre
+    genGenre,
+    genInventory
 }
