@@ -18,40 +18,64 @@ async function genGenre (): Promise<string> {
     return options[Math.floor(Math.random() * options.length)]
 }
 
-async function initStatus (genre: string): Promise<string> {
-    return getCompletion([
-        {
-            role: 'system',
-            content:
-                'You are responsible for realistically assigning the condition of the player in an adventure game. ' +
-                `This game's genre is ${genre}. ` +
-                'Only respond with descriptions of the player\'s current health and any persistent effects they may be experiencing. ' +
-                'Do not use full sentences. Do not directly mention the player or user in your description.'
-        }, {
-            role: 'user',
-            content: 'I want to start a new game, describe the initial condition of my player.'
-        }
-    ])
+type PlayerState = {
+    status: string,
+    inventory: string[]
 }
 
-async function initInventory (genre: string): Promise<string[]> {
-    return getItemizedCompletion([
+async function initPlayerState (genre: string): Promise<PlayerState> {
+    // Generate base truth description of player character to extract
+    // player inventory and current status from.
+    // Prevents misalignment of items with current player state.
+    const description = await getCompletion([
         {
             role: 'system',
             content:
-                'You are responsible for realistically allocating resources in an adventure game. ' +
+                'You are responsible for assigning the starting condition of a player in an adventure game. ' +
                 `This game's genre is ${genre}. ` +
-                'Resource names should be short and only contain vital information. ' +
-                'Write your response as a numbered list, do not explain or respond in full sentences.'
+                'Only describe who the player is, an accounting of all items they have, and a detailed description of their overall health.'
         }, {
             role: 'user',
-            content: 'Assign my player some items for the start of the game.'
+            content: 'I want to start a new game, describe my player but don\'t give them a name.'
         }
-    ], 1)
+    ])
+
+    // Extract player status from description.
+    const statusPromise = getCompletion([
+        {
+            role: 'system',
+            content:
+                'You are responsible for describing the condition of the player in an adventure game. ' +
+                `This game's genre is ${genre}. ` +
+                'Given a description of a character, you will respond with only the details concerning their health.' +
+                'Respond with the most concise answer possible.'
+        }, {
+            role: 'user',
+            content: description
+        }
+    ])
+
+    // Extract player inventory from description.
+    const inventoryPromise = getItemizedCompletion([
+        {
+            role: 'system',
+            content:
+                'You are responsible for tracking the items a player has in an advendure game. ' +
+                `This game's genre is ${genre}. ` +
+                'Given a description of a character, you will respond with only a list of the items they have. ' +
+                'Item names should be as short as possible. ' +
+                'Only respond with a numbered list, do not explain or respond in full sentences.'
+        }, {
+            role: 'user',
+            content: description
+        }
+    ])
+
+    const [status, inventory] = await Promise.all([statusPromise, inventoryPromise])
+    return { status, inventory }
 }
 
 export {
     genGenre,
-    initStatus,
-    initInventory
+    initPlayerState
 }
