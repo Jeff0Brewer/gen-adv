@@ -1,14 +1,9 @@
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
-import { getGenre } from '../game/logic'
+import { useGameContext } from '../hooks/game-context'
 import styles from '../styles/app.module.css'
 
 function App (): ReactElement {
-    const [genre, setGenre] = useState<string | null>(null)
-
-    useEffect(() => {
-        getGenre().then(genre => setGenre(genre))
-    }, [])
+    const { genre } = useGameContext()
 
     return (
         <main className={styles.app}>

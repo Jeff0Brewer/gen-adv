@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 import Head from 'next/head'
 import App from '../components/app'
+import GameProvider from '../components/game-provider'
 
 function Home (): ReactElement {
     return (
@@ -11,7 +12,9 @@ function Home (): ReactElement {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <App />
+            <GameProvider>
+                <App />
+            </GameProvider>
         </>
     )
 }
