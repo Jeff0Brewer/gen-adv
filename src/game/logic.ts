@@ -6,7 +6,7 @@ async function getGenre (depth: number = 0): Promise<string> {
     const { content } = await getCompletion([
         {
             role: 'system',
-            content: 'Do not explain or respond in full sentences'
+            content: 'Do not explain or respond in full sentences. Be highly creative and generate only unique answers.'
         },
         {
             role: 'user',
@@ -23,7 +23,7 @@ async function getGenre (depth: number = 0): Promise<string> {
         if (depth < DEPTH_LIMIT) {
             return getGenre(depth + 1)
         }
-        // Error if depth limit exceeded.
+        // Error if retry limit exceeded.
         throw new Error('Genre generation exceeded retry limit.')
     }
 }
