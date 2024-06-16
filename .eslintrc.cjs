@@ -23,6 +23,12 @@ module.exports = {
             varsIgnorePattern: '^_',
             caughtErrorsIgnorePattern: '^_'
         }],
+        'sort-imports': [
+            'error',
+            {
+                memberSyntaxSortOrder: ['none', 'all', 'single', 'multiple']
+            }
+        ],
         'import/order': [
             'error',
             {
@@ -35,7 +41,11 @@ module.exports = {
                     'sibling',
                     'index',
                     'object'
-                ]
+                ],
+                'newlines-between': 'never',
+                alphabetize: {
+                    order: 'asc'
+                }
             }
         ]
     }
