@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react'
+import { FaPlay } from 'react-icons/fa'
 import { useGameContext } from '../hooks/game-context'
 import styles from '../styles/app.module.css'
 
@@ -12,7 +13,21 @@ function App (): ReactElement {
                 <InfoItem label={'status'} content={status} />
                 <InfoItem label={'inventory'} content={inventory} />
             </section>
+            <section className={styles.main}>
+                <GameInput />
+            </section>
         </main>
+    )
+}
+
+function GameInput (): ReactElement {
+    return (
+        <div className={styles.input}>
+            <textarea></textarea>
+            <button>
+                <FaPlay />
+            </button>
+        </div>
     )
 }
 
