@@ -1,5 +1,23 @@
 import { expect, test } from 'vitest'
-import { isValidMessage, itemsFromNumberedList } from '../src/lib/openai'
+import {
+    isValidMessage,
+    itemsFromNumberedList,
+    itemsToNumberedList
+} from '../src/lib/openai'
+
+test('itemsToNumberedList returns numbered list in order of input', () => {
+    expect(
+        itemsToNumberedList([
+            'cat',
+            'rat',
+            'fish'
+        ])
+    ).toBe('1. cat\n2. rat\n3. fish')
+})
+
+test('itemsToNumberedList returns empty string for empty list', () => {
+    expect(itemsToNumberedList([])).toBe('')
+})
 
 test('itemsFromNumberedList only returns numbered items', () => {
     expect(
@@ -13,9 +31,7 @@ test('itemsFromNumberedList only returns numbered items', () => {
                 'Description to exclude'
             ].join('\n')
         )
-    ).toEqual(
-        ['cats', 'dogs', 'fish']
-    )
+    ).toEqual(['cats', 'dogs', 'fish'])
 })
 
 test('itemsFromNumberedList throws when no numbered items present', () => {
@@ -27,6 +43,13 @@ test('itemsFromNumberedList throws when no numbered items present', () => {
             ].join('\n')
         )
     }).toThrow()
+})
+
+test('Conversion of items to and from numbered list doesn\'t change original items', () => {
+    const items = ['apple', 'bone', 'car', 'd88a', 'eaef31', 'f123adsf']
+    expect(
+        itemsFromNumberedList(itemsToNumberedList(items))
+    ).toEqual(items)
 })
 
 test('isValidMessage returns true on assistant message with valid content', () => {
