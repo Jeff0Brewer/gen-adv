@@ -35,7 +35,7 @@ function itemsFromNumberedList(content: string): string[] {
 
 function itemsToNumberedList(items: string[]): string {
     return items
-        .map((item, i) => `${i}. ${item}`)
+        .map((item, i) => `${i + 1}. ${item}`)
         .join('\n')
 }
 
