@@ -23,14 +23,15 @@ async function getCompletion(messages: Message[]): Promise<string> {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages })
     })
+
     if (!res.ok) {
         throw new Error(`Error ${res.status}: ${res.statusText}`)
     }
 
     const message = await res.json() as unknown
+
     if (!isValidMessage(message)) {
-        // TODO: add better error message
-        throw new Error('Completion failed.')
+        throw new Error('Invalid completion format.')
     }
 
     return message.content
