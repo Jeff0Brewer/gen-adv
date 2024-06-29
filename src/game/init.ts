@@ -25,7 +25,7 @@ interface PlayerState {
     inventory: string[]
 }
 
-async function initPlayerState(genre: string): Promise<PlayerState> {
+async function genPlayerState(genre: string): Promise<PlayerState> {
     // Generate base truth description of player character to extract player inventory and current status from.
     // This prevents misalignment of inventory and player status.
     const description = await getCompletion([
@@ -77,5 +77,5 @@ async function initPlayerState(genre: string): Promise<PlayerState> {
 
 export {
     genGenre,
-    initPlayerState
+    genPlayerState
 }

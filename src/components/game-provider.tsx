@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect, useState } from 'react'
-import { genGenre, initPlayerState } from '../game/init'
+import { genGenre, genPlayerState } from '../game/init'
 import GameContext from '../hooks/game-context'
 
 interface GameProviderProps {
@@ -15,21 +15,17 @@ function GameProvider(
     const [inventory, setInventory] = useState<string[] | null>(null)
 
     useEffect(() => {
-        genGenre()
-            .then(setGenre)
-            .catch(console.error)
-    }, [])
+        const init = async (): Promise<void> => {
+            const genre = await genGenre()
+            setGenre(genre)
 
-    useEffect(() => {
-        if (genre) {
-            initPlayerState(genre)
-                .then(({ status, inventory }) => {
-                    setStatus(status)
-                    setInventory(inventory)
-                })
-                .catch(console.error)
+            const { status, inventory } = await genPlayerState(genre)
+            setStatus(status)
+            setInventory(inventory)
         }
-    }, [genre])
+
+        init().catch(console.error)
+    }, [])
 
     return (
         <GameContext.Provider value={{
