@@ -13,56 +13,27 @@ interface Message {
 
 function isValidMessage(obj: unknown): obj is Message {
     const { role, content } = obj as Message
-    return ROLES.includes(role) && typeof content === 'string'
+    return (
+        typeof content === 'string'
+        && ROLES.includes(role)
+    )
 }
 
-async function getCompletion(messages: Message[]): Promise<string> {
-    const res = await fetch('/api/completion', {
-        method: 'POST',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages })
-    })
+function itemsFromNumberedList(content: string): string[] {
+    const lines = content.split('\n')
 
-    if (!res.ok) {
-        throw new Error(`Error ${res.status}: ${res.statusText}`)
+    // Exclude non-numbered lines to prevent gibberish from headers / descriptions.
+    const numberedLines = lines.filter(l => l.match(/^\d*\./))
+
+    const items = numberedLines.map(l => l.replace(/^\d*\./, '').trim())
+    if (items.length === 0) {
+        throw new Error(`Expected numbered list, no numbered items found:\n${content}`)
     }
-
-    const message = await res.json() as unknown
-
-    if (!isValidMessage(message)) {
-        throw new Error('Invalid completion format.')
-    }
-
-    return message.content
-}
-
-async function getItemizedCompletion(messages: Message[], retries = 0): Promise<string[]> {
-    const completion = await getCompletion(messages)
-    try {
-        // Parse items from numbered list, excluding lines not in numbered item.
-        return completion
-            .split('\n')
-            .filter(line => line.match(/^\d*\./))
-            .map(line => line.replace(/^\d*\./, '').trim())
-    }
-    catch {
-        console.error(`Expected numbered list, recieved: \n${completion}`)
-
-        // Retry if completion not formatted as expected.
-        if (retries > 0) {
-            return getItemizedCompletion(messages, retries - 1)
-        }
-
-        // Error if retry limit exceeded.
-        throw new Error(
-            'Itemized completion exceeded retry limit, ensure prompt requires numbered output.'
-        )
-    }
+    return items
 }
 
 export type { Message }
 export {
-    getCompletion,
-    getItemizedCompletion
+    isValidMessage,
+    itemsFromNumberedList
 }

@@ -1,4 +1,4 @@
-import { getCompletion, getItemizedCompletion } from '../lib/openai'
+import { getCompletion, getItemizedCompletion } from '../lib/completions'
 
 async function genGenre(): Promise<string> {
     const options = await getItemizedCompletion([
