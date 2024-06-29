@@ -15,6 +15,7 @@ function isValidMessage(obj: unknown): obj is Message {
     const { role, content } = obj as Message
     return (
         typeof content === 'string'
+        && content.length > 0
         && ROLES.includes(role)
     )
 }
