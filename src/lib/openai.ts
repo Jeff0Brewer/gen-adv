@@ -33,8 +33,15 @@ function itemsFromNumberedList(content: string): string[] {
     return items
 }
 
+function itemsToNumberedList(items: string[]): string {
+    return items
+        .map((item, i) => `${i}. ${item}`)
+        .join('\n')
+}
+
 export type { Message }
 export {
     isValidMessage,
-    itemsFromNumberedList
+    itemsFromNumberedList,
+    itemsToNumberedList
 }
