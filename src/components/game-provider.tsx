@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react'
 import { genGenre, initPlayerState } from '../game/init'
 import GameContext from '../hooks/game-context'
 
-type GameProviderProps = {
+interface GameProviderProps {
     children: ReactNode
 }
 
-function GameProvider (
+function GameProvider(
     { children }: GameProviderProps
 ): ReactElement {
     const [genre, setGenre] = useState<string | null>(null)
@@ -15,15 +15,19 @@ function GameProvider (
     const [inventory, setInventory] = useState<string[] | null>(null)
 
     useEffect(() => {
-        genGenre().then(setGenre)
+        genGenre()
+            .then(setGenre)
+            .catch(console.error)
     }, [])
 
     useEffect(() => {
         if (genre) {
-            initPlayerState(genre).then(({ status, inventory }) => {
-                setStatus(status)
-                setInventory(inventory)
-            })
+            initPlayerState(genre)
+                .then(({ status, inventory }) => {
+                    setStatus(status)
+                    setInventory(inventory)
+                })
+                .catch(console.error)
         }
     }, [genre])
 
@@ -32,7 +36,8 @@ function GameProvider (
             genre,
             status,
             inventory
-        }}>
+        }}
+        >
             {children}
         </GameContext.Provider>
     )

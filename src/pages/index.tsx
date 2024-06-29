@@ -3,7 +3,7 @@ import Head from 'next/head'
 import App from '../components/app'
 import GameProvider from '../components/game-provider'
 
-function Home (): ReactElement {
+function Home(): ReactElement {
     return (
         <>
             <Head>

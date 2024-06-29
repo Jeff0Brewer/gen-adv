@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react'
 
-type GameContextProps = {
-    genre: string | null,
-    status: string | null,
+interface GameContextProps {
+    genre: string | null
+    status: string | null
     inventory: string[] | null
 }
 

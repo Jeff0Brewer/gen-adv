@@ -1,30 +1,42 @@
-type Message = {
-    role: 'function' | 'system' | 'user' | 'assistant' | 'tool',
+const ROLES = [
+    'function',
+    'system',
+    'user',
+    'assistant',
+    'tool'
+] as const
+
+interface Message {
+    role: (typeof ROLES)[number]
     content: string
 }
 
-async function getCompletion (messages: Message[]): Promise<string> {
+function isValidMessage(obj: unknown): obj is Message {
+    const { role, content } = obj as Message
+    return ROLES.includes(role) && typeof content === 'string'
+}
+
+async function getCompletion(messages: Message[]): Promise<string> {
     const res = await fetch('/api/completion', {
         method: 'POST',
         cache: 'no-cache',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages })
     })
-
     if (!res.ok) {
-        throw new Error(`Completion failed: ${res.statusText}`)
+        throw new Error(`Error ${res.status}: ${res.statusText}`)
     }
 
-    const data = await res.json()
-
-    if (!data?.message) {
-        throw new Error(`Incomplete response: ${data}`)
+    const message = await res.json() as unknown
+    if (!isValidMessage(message)) {
+        // TODO: add better error message
+        throw new Error('Completion failed.')
     }
 
-    return data.message.content
+    return message.content
 }
 
-async function getItemizedCompletion (messages: Message[], retries: number = 0): Promise<string[]> {
+async function getItemizedCompletion(messages: Message[], retries = 0): Promise<string[]> {
     const completion = await getCompletion(messages)
     try {
         // Parse items from numbered list, excluding lines not in numbered item.
@@ -32,7 +44,8 @@ async function getItemizedCompletion (messages: Message[], retries: number = 0):
             .split('\n')
             .filter(line => line.match(/^\d*\./))
             .map(line => line.replace(/^\d*\./, '').trim())
-    } catch {
+    }
+    catch {
         console.error(`Expected numbered list, recieved: \n${completion}`)
 
         // Retry if completion not formatted as expected.

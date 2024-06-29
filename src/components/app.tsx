@@ -3,15 +3,15 @@ import { FaPlay } from 'react-icons/fa'
 import { useGameContext } from '../hooks/game-context'
 import styles from '../styles/app.module.css'
 
-function App (): ReactElement {
+function App(): ReactElement {
     const { genre, status, inventory } = useGameContext()
 
     return (
         <main className={styles.app}>
             <section className={styles.info}>
-                <InfoItem label={'genre'} content={genre} />
-                <InfoItem label={'status'} content={status} />
-                <InfoItem label={'inventory'} content={inventory} />
+                <InfoItem label="genre" content={genre} />
+                <InfoItem label="status" content={status} />
+                <InfoItem label="inventory" content={inventory} />
             </section>
             <section className={styles.main}>
                 <GameInput />
@@ -20,7 +20,7 @@ function App (): ReactElement {
     )
 }
 
-function GameInput (): ReactElement {
+function GameInput(): ReactElement {
     return (
         <div className={styles.input}>
             <textarea></textarea>
@@ -31,12 +31,12 @@ function GameInput (): ReactElement {
     )
 }
 
-type InfoItemProps = {
-    label: string,
+interface InfoItemProps {
+    label: string
     content: string | string[] | null
 }
 
-function InfoItem (
+function InfoItem(
     { label, content }: InfoItemProps
 ): ReactElement {
     return (
@@ -44,8 +44,8 @@ function InfoItem (
             <p className={styles.infoLabel}>
                 {label}
             </p>
-            { typeof content === 'string' &&
-                <p>{content}</p> }
+            { typeof content === 'string'
+            && <p>{content}</p> }
             { Array.isArray(content) && content.map((item, i) =>
                 <p key={i}>{item}</p>) }
         </div>
