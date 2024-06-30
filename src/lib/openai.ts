@@ -1,54 +1,47 @@
-type Message = {
-    role: 'function' | 'system' | 'user' | 'assistant' | 'tool',
+const ROLES = [
+    'function',
+    'system',
+    'user',
+    'assistant',
+    'tool'
+] as const
+
+interface Message {
+    role: (typeof ROLES)[number]
     content: string
 }
 
-async function getCompletion (messages: Message[]): Promise<string> {
-    const res = await fetch('/api/completion', {
-        method: 'POST',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages })
-    })
-
-    if (!res.ok) {
-        throw new Error(`Completion failed: ${res.statusText}`)
-    }
-
-    const data = await res.json()
-
-    if (!data?.message) {
-        throw new Error(`Incomplete response: ${data}`)
-    }
-
-    return data.message.content
+function isValidMessage(obj: unknown): obj is Message {
+    const { role, content } = obj as Message
+    return (
+        typeof content === 'string'
+        && content.length > 0
+        && ROLES.includes(role)
+    )
 }
 
-async function getItemizedCompletion (messages: Message[], retries: number = 0): Promise<string[]> {
-    const completion = await getCompletion(messages)
-    try {
-        // Parse items from numbered list, excluding lines not in numbered item.
-        return completion
-            .split('\n')
-            .filter(line => line.match(/^\d*\./))
-            .map(line => line.replace(/^\d*\./, '').trim())
-    } catch {
-        console.error(`Expected numbered list, recieved: \n${completion}`)
+function itemsFromNumberedList(content: string): string[] {
+    const lines = content.split('\n')
 
-        // Retry if completion not formatted as expected.
-        if (retries > 0) {
-            return getItemizedCompletion(messages, retries - 1)
-        }
+    // Exclude non-numbered lines to prevent gibberish from headers / descriptions.
+    const numberedLines = lines.filter(l => l.match(/^\d*\./))
 
-        // Error if retry limit exceeded.
-        throw new Error(
-            'Itemized completion exceeded retry limit, ensure prompt requires numbered output.'
-        )
+    const items = numberedLines.map(l => l.replace(/^\d*\./, '').trim())
+    if (items.length === 0) {
+        throw new Error(`Expected numbered list, no numbered items found:\n${content}`)
     }
+    return items
+}
+
+function itemsToNumberedList(items: string[]): string {
+    return items
+        .map((item, i) => `${i + 1}. ${item}`)
+        .join('\n')
 }
 
 export type { Message }
 export {
-    getCompletion,
-    getItemizedCompletion
+    isValidMessage,
+    itemsFromNumberedList,
+    itemsToNumberedList
 }

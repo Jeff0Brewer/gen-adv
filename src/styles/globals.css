@@ -1,9 +1,5 @@
 :root {
-    --color0: #000;
-    --color1: #111;
-    --text0: #fff;
-    --text1: #ccc;
-    --timing: 250ms ease;
+    --timing: 200ms ease;
 }
 
 *, *:before, *:after {
@@ -13,22 +9,25 @@
 }
 
 html, body {
-    background-color: var(--color0);
-    color: var(--text0);
+    background-color: #000;
+    color: #fff;
     font-family: system-ui, sans-serif;
     overscroll-behavior-y: none;
 }
 
-input[type="text"], textarea {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
+input[type="text"], textarea, button {
     font: inherit;
     color: inherit;
     border: none;
     background-color: transparent;
+}
+
+textarea {
+    resize: none;
+}
+
+button, a {
+    cursor: pointer;
 }
 
 a {

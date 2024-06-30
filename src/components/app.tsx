@@ -1,39 +1,19 @@
 import type { ReactElement } from 'react'
-import { useGameContext } from '../hooks/game-context'
+import GameProvider from '../components/game-provider'
+import InfoDisplay from '../components/info-display'
+import StoryDisplay from '../components/story-display'
+import UserInput from '../components/user-input'
 import styles from '../styles/app.module.css'
 
-function App (): ReactElement {
-    const { genre, status, inventory } = useGameContext()
-
+function App(): ReactElement {
     return (
-        <main className={styles.app}>
-            <section className={styles.info}>
-                <InfoItem label={'genre'} content={genre} />
-                <InfoItem label={'status'} content={status} />
-                <InfoItem label={'inventory'} content={inventory} />
-            </section>
-        </main>
-    )
-}
-
-type InfoItemProps = {
-    label: string,
-    content: string | string[] | null
-}
-
-function InfoItem (
-    { label, content }: InfoItemProps
-): ReactElement {
-    return (
-        <div>
-            <p className={styles.infoLabel}>
-                {label}
-            </p>
-            { typeof content === 'string' &&
-                <p>{content}</p> }
-            { Array.isArray(content) && content.map((item, i) =>
-                <p key={i}>{item}</p>) }
-        </div>
+        <GameProvider>
+            <main className={styles.app}>
+                <InfoDisplay />
+                <StoryDisplay />
+                <UserInput />
+            </main>
+        </GameProvider>
     )
 }
 
