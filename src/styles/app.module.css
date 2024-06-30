@@ -4,7 +4,10 @@
     height: 100vh;
     display: grid;
     grid-template-columns: 220px 1fr;
-    grid-template-areas: "info main";
+    grid-template-rows: 1fr 150px;
+    grid-template-areas:
+        "info story"
+        "info input";
 }
 
 .info {
@@ -33,24 +36,25 @@
     margin-bottom: 5px;
 }
 
-.main {
-    grid-area: main;
+.story {
+    grid-area: story;
     position: relative;
-    width: 100%;
-    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 100px;
 }
 
 .input {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    grid-area: input;
+    position: relative;
 }
 
 .input > textarea {
     position: relative;
     width: 100%;
-    min-height: 150px;
+    height: 100%;
     background-color: #080808;
     padding: 10px;
 }

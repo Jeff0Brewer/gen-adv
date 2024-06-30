@@ -15,9 +15,10 @@ function GameProvider(
     const [genre, setGenre] = useState<string | null>(null)
     const [status, setStatus] = useState<string | null>(null)
     const [inventory, setInventory] = useState<string[] | null>(null)
-    const [story, setStory] = useState<Message[]>([
-        { role: 'user', content: 'I\'d like to start the game, describe my surroundings.' }
-    ])
+    const [story, setStory] = useState<Message[]>([])
+    const [userMessage, setUserMessage] = useState<string | null>(
+        'I\'d like to start the game, describe my surroundings.'
+    )
 
     useEffect(() => {
         const init = async (): Promise<void> => {
@@ -37,19 +38,27 @@ function GameProvider(
             genre === null
             || status === null
             || inventory === null
-            || story[story.length - 1].role !== 'user'
+            || userMessage === null
         ) { return }
 
-        updateStory(genre, status, inventory, story)
+        const storyPrompt: Message[] = [
+            ...story,
+            { role: 'user', content: userMessage }
+        ]
+        setUserMessage(null)
+
+        updateStory(genre, status, inventory, storyPrompt)
             .then(setStory)
             .catch(console.error)
-    }, [genre, status, inventory, story])
+    }, [genre, status, inventory, story, userMessage])
 
     return (
         <GameContext.Provider value={{
             genre,
             status,
-            inventory
+            inventory,
+            story,
+            setUserMessage
         }}
         >
             {children}

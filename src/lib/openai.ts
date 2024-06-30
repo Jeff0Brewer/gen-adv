@@ -20,6 +20,11 @@ function isValidMessage(obj: unknown): obj is Message {
     )
 }
 
+function getLatestStory(story: Message[]): string {
+    const responses = story.filter(({ role }) => role === 'assistant')
+    return responses[responses.length - 1]?.content || ''
+}
+
 function itemsFromNumberedList(content: string): string[] {
     const lines = content.split('\n')
 
@@ -43,5 +48,6 @@ export type { Message }
 export {
     isValidMessage,
     itemsFromNumberedList,
-    itemsToNumberedList
+    itemsToNumberedList,
+    getLatestStory
 }
