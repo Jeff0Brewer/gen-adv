@@ -40,7 +40,7 @@ function GameProvider(
             || status === null
             || inventory === null
             || userMessage === null
-            || lastRole(history) === 'user'
+            || (history.length > 0 && lastRole(history) === 'user')
         ) { return }
 
         const storyPrompt: Message[] = [
