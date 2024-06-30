@@ -2,7 +2,7 @@ import type { Message } from '../lib/openai'
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { genGenre, genPlayerState } from '../game/init'
-import { updateStatus, updateStory } from '../game/update'
+import { updateInventory, updateStatus, updateStory } from '../game/update'
 import GameContext from '../hooks/game-context'
 import { lastRoleIs } from '../lib/openai'
 
@@ -68,8 +68,12 @@ function GameProvider(
         const updatePlayerState = async (history: Message[]): Promise<void> => {
             console.log('Updating player state.')
 
-            const newStatus = await updateStatus(status, history)
+            const [newStatus, newInventory] = await Promise.all([
+                updateStatus(status, history),
+                updateInventory(inventory, history)
+            ])
             setStatus(newStatus)
+            setInventory(newInventory)
         }
 
         sendUserMessage()

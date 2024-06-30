@@ -1,18 +1,18 @@
 import type { Message } from '../lib/openai'
-import { getCompletion } from '../lib/completions'
+import { getCompletion, getItemizedCompletion } from '../lib/completions'
 import { itemsToNumberedList, lastRoleIs } from '../lib/openai'
 
 async function updateStory(
     genre: string,
     status: string,
     inventory: string[],
-    story: Message[]
+    history: Message[]
 ): Promise<Message[]> {
-    if (!lastRoleIs(story, 'user')) {
+    if (!lastRoleIs(history, 'user')) {
         throw new Error('Story update requested without user message.')
     }
 
-    const nextStep = await getCompletion([
+    const storyUpdate = await getCompletion([
         {
             role: 'system',
             content: [
@@ -20,7 +20,7 @@ async function updateStory(
                 `This game's genre is ${genre}.`,
                 'Be highly creative but remain concise.'
             ].join(' ')
-        }, ...story, {
+        }, ...history, {
             role: 'system',
             content: [
                 'The player\'s inventory contains the following items:',
@@ -32,20 +32,20 @@ async function updateStory(
     ])
 
     return [
-        ...story,
-        { role: 'assistant', content: nextStep }
+        ...history,
+        { role: 'assistant', content: storyUpdate }
     ]
 }
 
 async function updateStatus(
     status: string,
-    story: Message[]
+    history: Message[]
 ): Promise<string> {
-    if (!lastRoleIs(story, 'assistant')) {
+    if (!lastRoleIs(history, 'assistant')) {
         throw new Error('Status update requested without assistant message.')
     }
 
-    const currStory = story[story.length - 1].content
+    const currStory = history[history.length - 1].content
 
     const newStatus = await getCompletion([
         {
@@ -53,7 +53,7 @@ async function updateStatus(
             content: [
                 'You are responsible for realistically managing the health of a player in an adventure game.',
                 'Given a description of the player\'s health and a set of events, update the health description based on what happened in the events.',
-                'If the player\'s health is the same after the events, do not edit the original description.',
+                'If the player\'s health is the same after the events, repeat the original description.',
                 'Be as concise as possible. Do not use full sentences.'
             ].join(' ')
         }, {
@@ -61,9 +61,9 @@ async function updateStatus(
             content: [
                 'In the game, this just happened:',
                 currStory,
-                'Before that happened, this was my player\'s health:',
+                'Before that happened, this was the player\'s health:',
                 status,
-                'Please update the description on my player\'s health based on what happened.'
+                'Please update the description of the player\'s health based on what happened.'
             ].join('\n')
         }
     ])
@@ -71,7 +71,41 @@ async function updateStatus(
     return newStatus
 }
 
+async function updateInventory(
+    inventory: string[],
+    history: Message[]
+): Promise<string[]> {
+    if (!lastRoleIs(history, 'assistant')) {
+        throw new Error('Inventory update requested without assistant message.')
+    }
+
+    const currStory = history[history.length - 1].content
+
+    const newInventory = await getItemizedCompletion([
+        {
+            role: 'system',
+            content: [
+                'You are responsible for tracking items in an adventure game.',
+                'Given a list of items in the player\'s inventory and a set of events from the game, update the list of items to reflect what happened in the game.',
+                'Respond with the updated numbered list, do not explain or use full sentences.'
+            ].join(' ')
+        }, {
+            role: 'user',
+            content: [
+                'In the game, this just happened:',
+                currStory,
+                'Before that happened, the player had these items:',
+                itemsToNumberedList(inventory),
+                'Please update the list of items based on what happened.'
+            ].join('\n')
+        }
+    ], 1)
+
+    return newInventory
+}
+
 export {
     updateStory,
-    updateStatus
+    updateStatus,
+    updateInventory
 }
