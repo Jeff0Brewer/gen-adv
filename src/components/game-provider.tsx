@@ -72,6 +72,12 @@ function GameProvider(
                 updateStatus(status, history),
                 updateInventory(inventory, history)
             ])
+
+            const lostItems = inventory.filter(item => !newInventory.includes(item))
+            const foundItems = newInventory.filter(item => !inventory.includes(item))
+            console.log('Lost items:', lostItems)
+            console.log('Found items:', foundItems)
+
             setStatus(newStatus)
             setInventory(newInventory)
         }
