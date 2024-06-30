@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 import { useCallback, useRef } from 'react'
 import { FaPlay } from 'react-icons/fa'
 import { useGameContext } from '../hooks/game-context'
-import styles from '../styles/app.module.css'
+import styles from '../styles/user-input.module.css'
 
 function UserInput(): ReactElement {
     const { setUserMessage } = useGameContext()

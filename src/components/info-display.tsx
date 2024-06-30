@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 import { useGameContext } from '../hooks/game-context'
-import styles from '../styles/app.module.css'
+import styles from '../styles/info-display.module.css'
 
 function InfoDisplay(): ReactElement {
     const {
@@ -27,13 +27,11 @@ function InfoItem(
     { label, content }: InfoItemProps
 ): ReactElement {
     return (
-        <div className={`${styles.infoItem} ${content === null && styles.hidden}`}>
-            <p className={styles.infoLabel}>
+        <div className={`${styles.item} ${content === null && styles.hidden}`}>
+            <p className={styles.label}>
                 {label}
             </p>
-            { typeof content === 'string' && (
-                <p>{content}</p>
-            ) }
+            { typeof content === 'string' && <p>{content}</p> }
             { Array.isArray(content) && content.map((item, i) =>
                 <p key={i}>{item}</p>) }
         </div>

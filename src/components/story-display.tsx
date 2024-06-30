@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 import { useGameContext } from '../hooks/game-context'
-import styles from '../styles/app.module.css'
+import styles from '../styles/story-display.module.css'
 
 function StoryDisplay(): ReactElement {
     const { story } = useGameContext()
