@@ -1,6 +1,8 @@
+import type { Message } from '../lib/openai'
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { genGenre, genPlayerState } from '../game/init'
+import { updateStory } from '../game/update'
 import GameContext from '../hooks/game-context'
 
 interface GameProviderProps {
@@ -13,6 +15,9 @@ function GameProvider(
     const [genre, setGenre] = useState<string | null>(null)
     const [status, setStatus] = useState<string | null>(null)
     const [inventory, setInventory] = useState<string[] | null>(null)
+    const [story, setStory] = useState<Message[]>([
+        { role: 'user', content: 'I\'d like to start the game, describe my surroundings.' }
+    ])
 
     useEffect(() => {
         const init = async (): Promise<void> => {
@@ -26,6 +31,19 @@ function GameProvider(
 
         init().catch(console.error)
     }, [])
+
+    useEffect(() => {
+        if (
+            genre === null
+            || status === null
+            || inventory === null
+            || story[story.length - 1].role !== 'user'
+        ) { return }
+
+        updateStory(genre, status, inventory, story)
+            .then(setStory)
+            .catch(console.error)
+    }, [genre, status, inventory, story])
 
     return (
         <GameContext.Provider value={{
