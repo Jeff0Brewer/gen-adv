@@ -1,11 +1,10 @@
-import type { Message } from '../lib/openai'
 import { createContext, useContext } from 'react'
 
 interface GameContextProps {
     genre: string | null
     status: string | null
     inventory: string[] | null
-    story: Message[] | null
+    story: string
     setUserMessage: (c: string) => void
 }
 

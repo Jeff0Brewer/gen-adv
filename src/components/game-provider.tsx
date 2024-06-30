@@ -1,6 +1,6 @@
 import type { Message } from '../lib/openai'
 import type { ReactElement, ReactNode } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { genGenre, genPlayerState } from '../game/init'
 import { updateStory } from '../game/update'
 import GameContext from '../hooks/game-context'
@@ -15,7 +15,7 @@ function GameProvider(
     const [genre, setGenre] = useState<string | null>(null)
     const [status, setStatus] = useState<string | null>(null)
     const [inventory, setInventory] = useState<string[] | null>(null)
-    const [story, setStory] = useState<Message[]>([])
+    const [history, setHistory] = useState<Message[]>([])
     const [userMessage, setUserMessage] = useState<string | null>(
         'I\'d like to start the game, describe my surroundings.'
     )
@@ -42,15 +42,22 @@ function GameProvider(
         ) { return }
 
         const storyPrompt: Message[] = [
-            ...story,
+            ...history,
             { role: 'user', content: userMessage }
         ]
         setUserMessage(null)
 
         updateStory(genre, status, inventory, storyPrompt)
-            .then(setStory)
+            .then(setHistory)
             .catch(console.error)
-    }, [genre, status, inventory, story, userMessage])
+    }, [genre, status, inventory, history, userMessage])
+
+    const story = useMemo(() =>
+        history
+            .filter(({ role }) => role === 'assistant')
+            .pop()?.content
+            ?? ''
+    , [history])
 
     return (
         <GameContext.Provider value={{
