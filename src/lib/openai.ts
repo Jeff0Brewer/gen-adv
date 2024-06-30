@@ -21,11 +21,11 @@ function isValidMessage(obj: unknown): obj is Message {
     )
 }
 
-function lastRole(history: Message[]): MessageRole {
+function lastRoleIs(history: Message[], role: MessageRole): boolean {
     if (history.length === 0) {
-        throw new Error('Attempted to get last role of empty message list.')
+        return false
     }
-    return history[history.length - 1].role
+    return role === history[history.length - 1].role
 }
 
 function itemsFromNumberedList(content: string): string[] {
@@ -50,7 +50,7 @@ function itemsToNumberedList(items: string[]): string {
 export type { Message }
 export {
     isValidMessage,
-    lastRole,
+    lastRoleIs,
     itemsFromNumberedList,
     itemsToNumberedList
 }

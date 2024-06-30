@@ -4,7 +4,20 @@ import { useEffect, useMemo, useState } from 'react'
 import { genGenre, genPlayerState } from '../game/init'
 import { updateStory } from '../game/update'
 import GameContext from '../hooks/game-context'
-import { lastRole } from '../lib/openai'
+import { lastRoleIs } from '../lib/openai'
+
+async function initGame(
+    setGenre: (g: string) => void,
+    setStatus: (s: string) => void,
+    setInventory: (i: string[]) => void
+): Promise<void> {
+    const genre = await genGenre()
+    setGenre(genre)
+
+    const { status, inventory } = await genPlayerState(genre)
+    setStatus(status)
+    setInventory(inventory)
+}
 
 interface GameProviderProps {
     children: ReactNode
@@ -22,16 +35,11 @@ function GameProvider(
     )
 
     useEffect(() => {
-        const init = async (): Promise<void> => {
-            const genre = await genGenre()
-            setGenre(genre)
-
-            const { status, inventory } = await genPlayerState(genre)
-            setStatus(status)
-            setInventory(inventory)
-        }
-
-        init().catch(console.error)
+        initGame(
+            setGenre,
+            setStatus,
+            setInventory
+        ).catch(console.error)
     }, [])
 
     useEffect(() => {
@@ -40,7 +48,7 @@ function GameProvider(
             || status === null
             || inventory === null
             || userMessage === null
-            || (history.length > 0 && lastRole(history) === 'user')
+            || lastRoleIs(history, 'user')
         ) { return }
 
         const storyPrompt: Message[] = [

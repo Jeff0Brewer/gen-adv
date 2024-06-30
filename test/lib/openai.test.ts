@@ -3,23 +3,26 @@ import {
     isValidMessage,
     itemsFromNumberedList,
     itemsToNumberedList,
-    lastRole
+    lastRoleIs
 } from '../../src/lib/openai'
 
-test('lastRole returns final role in list', () => {
+test('lastRoleIs returns true on matching role', () => {
     expect(
-        lastRole([
-            { role: 'system', content: 'Do stuff.' },
-            { role: 'user', content: 'You know what to do.' },
-            { role: 'assistant', content: 'stuff' }
-        ])
-    ).toBe('assistant')
+        lastRoleIs(
+            [
+                { role: 'system', content: 'Do stuff.' },
+                { role: 'user', content: 'You know what to do.' },
+                { role: 'assistant', content: 'stuff' }
+            ],
+            'assistant'
+        )
+    ).toBe(true)
 })
 
-test('lastRole throws on empty message list', () => {
-    expect(() =>
-        lastRole([])
-    ).toThrow()
+test('lastRoleIs returns false empty message list', () => {
+    expect(
+        lastRoleIs([], 'user')
+    ).toBe(false)
 })
 
 test('itemsToNumberedList returns numbered list in order of input', () => {
