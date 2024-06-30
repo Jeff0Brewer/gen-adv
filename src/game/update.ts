@@ -18,7 +18,7 @@ async function updateStory(
             content: [
                 'Act as narrator for an open-ended adventure game.',
                 `This game's genre is ${genre}.`,
-                'Be creative and provide vivid description.'
+                'Be highly creative but remain concise.'
             ].join(' ')
         }, ...story, {
             role: 'system',
