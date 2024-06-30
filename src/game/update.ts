@@ -37,6 +37,41 @@ async function updateStory(
     ]
 }
 
+async function updateStatus(
+    status: string,
+    story: Message[]
+): Promise<string> {
+    if (!lastRoleIs(story, 'assistant')) {
+        throw new Error('Status update requested without assistant message.')
+    }
+
+    const currStory = story[story.length - 1].content
+
+    const newStatus = await getCompletion([
+        {
+            role: 'system',
+            content: [
+                'You are responsible for realistically managing the health of a player in an adventure game.',
+                'Given a description of the player\'s health and a set of events, update the health description based on what happened in the events.',
+                'If the player\'s health is the same after the events, do not edit the original description.',
+                'Be as concise as possible. Do not use full sentences.'
+            ].join(' ')
+        }, {
+            role: 'user',
+            content: [
+                'In the game, this just happened:',
+                currStory,
+                'Before that happened, this was my player\'s health:',
+                status,
+                'Please update the description on my player\'s health based on what happened.'
+            ].join('\n')
+        }
+    ])
+
+    return newStatus
+}
+
 export {
-    updateStory
+    updateStory,
+    updateStatus
 }

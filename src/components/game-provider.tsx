@@ -2,7 +2,7 @@ import type { Message } from '../lib/openai'
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { genGenre, genPlayerState } from '../game/init'
-import { updateStory } from '../game/update'
+import { updateStatus, updateStory } from '../game/update'
 import GameContext from '../hooks/game-context'
 import { lastRoleIs } from '../lib/openai'
 
@@ -23,6 +23,8 @@ function GameProvider(
 
     useEffect(() => {
         const initGame = async (): Promise<void> => {
+            console.log('Initializing game.')
+
             const genre = await genGenre()
             setGenre(genre)
 
@@ -31,9 +33,7 @@ function GameProvider(
             setInventory(inventory)
         }
 
-        console.log('Initializing game.')
-        initGame()
-            .catch(console.error)
+        initGame().catch(console.error)
     }, [])
 
     useEffect(() => {
@@ -45,7 +45,9 @@ function GameProvider(
             return
         }
 
-        const sendUserMessage = async (): Promise<void> => {
+        const sendUserMessage = async (): Promise<Message[]> => {
+            console.log('Sending user message.')
+
             // Clear user message to prevent sending multiple times.
             setUserMessage(null)
 
@@ -58,11 +60,20 @@ function GameProvider(
                     { role: 'user', content: userMessage }
                 ]
             )
+
             setHistory(updated)
+            return updated
         }
 
-        console.log('Sending user message.')
+        const updatePlayerState = async (history: Message[]): Promise<void> => {
+            console.log('Updating player state.')
+
+            const newStatus = await updateStatus(status, history)
+            setStatus(newStatus)
+        }
+
         sendUserMessage()
+            .then(updatePlayerState)
             .catch(console.error)
     }, [genre, status, inventory, history, userMessage])
 
