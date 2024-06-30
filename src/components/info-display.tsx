@@ -1,13 +1,10 @@
 import type { ReactElement } from 'react'
 import { useGameContext } from '../hooks/game-context'
+import { ensureArray } from '../lib/util'
 import styles from '../styles/info-display.module.css'
 
 function InfoDisplay(): ReactElement {
-    const {
-        genre,
-        status,
-        inventory
-    } = useGameContext()
+    const { genre, status, inventory } = useGameContext()
 
     return (
         <section className={styles.info}>
@@ -27,13 +24,13 @@ function InfoItem(
     { label, content }: InfoItemProps
 ): ReactElement {
     return (
-        <div className={`${styles.item} ${content === null && styles.hidden}`}>
+        <div className={`${styles.item} ${!content && styles.hidden}`}>
             <p className={styles.label}>
                 {label}
             </p>
-            { typeof content === 'string' && <p>{content}</p> }
-            { Array.isArray(content) && content.map((item, i) =>
-                <p key={i}>{item}</p>) }
+            { content && ensureArray(content).map((item, i) =>
+                <p key={i}>{item}</p>
+            )}
         </div>
     )
 }
