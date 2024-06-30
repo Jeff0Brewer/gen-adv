@@ -6,19 +6,6 @@ import { updateStory } from '../game/update'
 import GameContext from '../hooks/game-context'
 import { lastRoleIs } from '../lib/openai'
 
-async function initGame(
-    setGenre: (g: string) => void,
-    setStatus: (s: string) => void,
-    setInventory: (i: string[]) => void
-): Promise<void> {
-    const genre = await genGenre()
-    setGenre(genre)
-
-    const { status, inventory } = await genPlayerState(genre)
-    setStatus(status)
-    setInventory(inventory)
-}
-
 interface GameProviderProps {
     children: ReactNode
 }
@@ -35,11 +22,16 @@ function GameProvider(
     )
 
     useEffect(() => {
-        initGame(
-            setGenre,
-            setStatus,
-            setInventory
-        ).catch(console.error)
+        const initGame = async (): Promise<void> => {
+            const genre = await genGenre()
+            setGenre(genre)
+
+            const { status, inventory } = await genPlayerState(genre)
+            setStatus(status)
+            setInventory(inventory)
+        }
+
+        initGame().catch(console.error)
     }, [])
 
     useEffect(() => {
