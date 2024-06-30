@@ -2,8 +2,25 @@ import { expect, test } from 'vitest'
 import {
     isValidMessage,
     itemsFromNumberedList,
-    itemsToNumberedList
+    itemsToNumberedList,
+    lastRole
 } from '../../src/lib/openai'
+
+test('lastRole returns final role in list', () => {
+    expect(
+        lastRole([
+            { role: 'system', content: 'Do stuff.' },
+            { role: 'user', content: 'You know what to do.' },
+            { role: 'assistant', content: 'stuff' }
+        ])
+    ).toBe('assistant')
+})
+
+test('lastRole throws on empty message list', () => {
+    expect(() =>
+        lastRole([])
+    ).toThrow()
+})
 
 test('itemsToNumberedList returns numbered list in order of input', () => {
     expect(
@@ -35,14 +52,14 @@ test('itemsFromNumberedList only returns numbered items', () => {
 })
 
 test('itemsFromNumberedList throws when no numbered items present', () => {
-    expect(() => {
+    expect(() =>
         itemsFromNumberedList(
             [
                 'This is not a numbered list. Confusion is upon us.',
                 'We must throw an error!'
             ].join('\n')
         )
-    }).toThrow()
+    ).toThrow()
 })
 
 test('Conversion of items to and from numbered list doesn\'t change original items', () => {
