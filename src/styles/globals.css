@@ -34,3 +34,7 @@ a {
     text-decoration: none;
     color: inherit;
 }
+
+.hidden {
+    opacity: 0;
+}

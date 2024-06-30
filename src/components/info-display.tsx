@@ -24,7 +24,7 @@ function InfoItem(
     { label, content }: InfoItemProps
 ): ReactElement {
     return (
-        <div className={`${styles.item} ${!content && styles.hidden}`}>
+        <div className={`${styles.item} ${!content && 'hidden'}`}>
             <p className={styles.label}>
                 {label}
             </p>
