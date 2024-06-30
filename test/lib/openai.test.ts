@@ -3,7 +3,7 @@ import {
     isValidMessage,
     itemsFromNumberedList,
     itemsToNumberedList
-} from '../src/lib/openai'
+} from '../../src/lib/openai'
 
 test('itemsToNumberedList returns numbered list in order of input', () => {
     expect(

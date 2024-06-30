@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import {
     ensureArray,
     randomChoice
-} from '../src/lib/util'
+} from '../../src/lib/util'
 
 test('randomChoice returns element from list of strings', () => {
     const list = ['a', 'b', 'c', 'd', 'e']
