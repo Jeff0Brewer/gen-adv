@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'
+import type { KeyboardEventHandler, ReactElement } from 'react'
 import { useCallback, useRef } from 'react'
 import { FaPlay } from 'react-icons/fa'
 import { useGameContext } from '../hooks/game-context'
@@ -9,19 +9,27 @@ function UserInput(): ReactElement {
     const inputRef = useRef<HTMLTextAreaElement>(null)
 
     const sendMessage = useCallback(() => {
-        if (!inputRef.current) {
+        const input = inputRef.current
+        if (!input) {
             throw new Error('No reference to input element.')
         }
-        const content = inputRef.current.value
-        if (content.length > 0) {
-            setUserMessage(content)
-            inputRef.current.value = ''
+
+        if (input.value.length > 0) {
+            setUserMessage(input.value)
+            input.value = ''
         }
     }, [setUserMessage])
 
+    const handleKey: KeyboardEventHandler = useCallback((e) => {
+        if (e.shiftKey && e.key === 'Enter') {
+            sendMessage()
+            e.preventDefault()
+        }
+    }, [sendMessage])
+
     return (
         <div className={styles.input}>
-            <textarea ref={inputRef}></textarea>
+            <textarea ref={inputRef} onKeyPress={handleKey}></textarea>
             <button onClick={sendMessage}>
                 <FaPlay />
             </button>
