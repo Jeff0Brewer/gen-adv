@@ -18,7 +18,7 @@ async function updateStory(
             content: [
                 'Act as narrator for an open-ended adventure game.',
                 `This game's genre is ${genre}.`,
-                'Be highly creative but remain concise.',
+                'Be highly creative and descriptive but remain concise.',
                 'Do not make decisions for the player, only evaluate their decisions and describe the outcome.'
             ].join(' ')
         }, ...history, {
@@ -54,8 +54,8 @@ async function updateStatus(
             content: [
                 'You are responsible for realistically managing the health of a player in an adventure game.',
                 'Given a description of the player\'s health and a set of events, update the health description based on what happened in the events.',
-                'If the player\'s health is the same after the events, repeat the original description.',
-                'Be as concise as possible. Do not use full sentences.'
+                'If the player\'s health unchanged, repeat the original description.',
+                'Be as concise as possible. Do not use full sentences or explain yourself.'
             ].join(' ')
         }, {
             role: 'user',
@@ -80,26 +80,41 @@ async function updateInventory(
         throw new Error('Inventory update requested without assistant message.')
     }
 
-    const currStory = history[history.length - 1].content
+    const [userAction, currStory] = history.slice(-2).map(msg => msg.content)
 
     const newInventory = await getItemizedCompletion([
         {
             role: 'system',
             content: [
                 'You are responsible for tracking items in an adventure game.',
-                'Given a list of items in the player\'s inventory and a set of events from the game, update the list of items to reflect what happened in the game.',
-                'Assume that items not mentioned in the game have not changed.',
-                'Respond with the updated numbered list, do not explain or use full sentences.'
+                'You will receive a list of items in the player\'s inventory and a step in the story of the game.',
+                'From the details of the story, edit the list of items to reflect what happened in the story.',
+                'Only change items explicitly mentioned in the story.',
+                'Do not remove items that can be used multiple times.',
+                'Item names should be as short as possible',
+                'Respond with a numbered list, do not explain or use full sentences.'
             ].join(' ')
         }, {
-            role: 'user',
+            role: 'system',
             content: [
-                'In the game, this just happened:',
-                currStory,
-                'Before that happened, the player had these items:',
-                itemsToNumberedList(inventory),
-                'Please update the list of items based on what happened.'
+                'The player\'s inventory contains these items:',
+                itemsToNumberedList(inventory)
             ].join('\n')
+        }, {
+            role: 'system',
+            content: [
+                'The player chose this action:',
+                userAction
+            ].join('\n')
+        }, {
+            role: 'system',
+            content: [
+                'The result of the player\'s chosen action is as follows:',
+                currStory
+            ].join('\n')
+        }, {
+            role: 'user',
+            content: 'List the items in my player\'s inventory after the last turn.'
         }
     ], 1)
 
