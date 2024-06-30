@@ -18,7 +18,8 @@ async function updateStory(
             content: [
                 'Act as narrator for an open-ended adventure game.',
                 `This game's genre is ${genre}.`,
-                'Be highly creative but remain concise.'
+                'Be highly creative but remain concise.',
+                'Do not make decisions for the player, only evaluate their decisions and describe the outcome.'
             ].join(' ')
         }, ...history, {
             role: 'system',
@@ -87,6 +88,7 @@ async function updateInventory(
             content: [
                 'You are responsible for tracking items in an adventure game.',
                 'Given a list of items in the player\'s inventory and a set of events from the game, update the list of items to reflect what happened in the game.',
+                'Assume that items not mentioned in the game have not changed.',
                 'Respond with the updated numbered list, do not explain or use full sentences.'
             ].join(' ')
         }, {
