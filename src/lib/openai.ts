@@ -22,6 +22,9 @@ function isValidMessage(obj: unknown): obj is Message {
 }
 
 function lastRole(history: Message[]): MessageRole {
+    if (history.length === 0) {
+        throw new Error('Attempted to get last role of empty message list.')
+    }
     return history[history.length - 1].role
 }
 
