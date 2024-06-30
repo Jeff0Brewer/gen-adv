@@ -5,9 +5,10 @@ const ROLES = [
     'assistant',
     'tool'
 ] as const
+type MessageRole = (typeof ROLES)[number]
 
 interface Message {
-    role: (typeof ROLES)[number]
+    role: MessageRole
     content: string
 }
 
@@ -18,6 +19,10 @@ function isValidMessage(obj: unknown): obj is Message {
         && content.length > 0
         && ROLES.includes(role)
     )
+}
+
+function lastRole(history: Message[]): MessageRole {
+    return history[history.length - 1].role
 }
 
 function itemsFromNumberedList(content: string): string[] {
@@ -42,6 +47,7 @@ function itemsToNumberedList(items: string[]): string {
 export type { Message }
 export {
     isValidMessage,
+    lastRole,
     itemsFromNumberedList,
     itemsToNumberedList
 }

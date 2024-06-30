@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { genGenre, genPlayerState } from '../game/init'
 import { updateStory } from '../game/update'
 import GameContext from '../hooks/game-context'
+import { lastRole } from '../lib/openai'
 
 interface GameProviderProps {
     children: ReactNode
@@ -39,6 +40,7 @@ function GameProvider(
             || status === null
             || inventory === null
             || userMessage === null
+            || lastRole(history) === 'user'
         ) { return }
 
         const storyPrompt: Message[] = [

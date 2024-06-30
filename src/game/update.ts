@@ -1,6 +1,6 @@
 import type { Message } from '../lib/openai'
 import { getCompletion } from '../lib/completions'
-import { itemsToNumberedList } from '../lib/openai'
+import { itemsToNumberedList, lastRole } from '../lib/openai'
 
 async function updateStory(
     genre: string,
@@ -8,7 +8,7 @@ async function updateStory(
     inventory: string[],
     story: Message[]
 ): Promise<Message[]> {
-    if (story[story.length - 1].role !== 'user') {
+    if (lastRole(story) !== 'user') {
         throw new Error('Story update requested without user message.')
     }
 
