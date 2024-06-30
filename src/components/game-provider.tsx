@@ -31,26 +31,38 @@ function GameProvider(
             setInventory(inventory)
         }
 
-        initGame().catch(console.error)
+        console.log('Initializing game.')
+        initGame()
+            .catch(console.error)
     }, [])
 
     useEffect(() => {
-        if (
-            genre === null
-            || status === null
-            || inventory === null
-            || userMessage === null
-            || lastRoleIs(history, 'user')
-        ) { return }
+        // Ensure required game elements have been initialized.
+        const isLoaded = genre !== null && status !== null && inventory !== null
+        // Ensure that user message exists and is responding to assistant.
+        const isSendable = userMessage !== null && !lastRoleIs(history, 'user')
+        if (!isLoaded || !isSendable) {
+            return
+        }
 
-        const storyPrompt: Message[] = [
-            ...history,
-            { role: 'user', content: userMessage }
-        ]
-        setUserMessage(null)
+        const sendUserMessage = async (): Promise<void> => {
+            // Clear user message to prevent sending multiple times.
+            setUserMessage(null)
 
-        updateStory(genre, status, inventory, storyPrompt)
-            .then(setHistory)
+            const updated = await updateStory(
+                genre,
+                status,
+                inventory,
+                [
+                    ...history,
+                    { role: 'user', content: userMessage }
+                ]
+            )
+            setHistory(updated)
+        }
+
+        console.log('Sending user message.')
+        sendUserMessage()
             .catch(console.error)
     }, [genre, status, inventory, history, userMessage])
 
