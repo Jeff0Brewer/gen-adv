@@ -2,11 +2,81 @@ import type { Message } from '../lib/openai'
 import { getCompletion, getItemizedCompletion } from '../lib/completions'
 import { itemsToNumberedList, lastRoleIs } from '../lib/openai'
 
+async function evaluateAction(
+    genre: string,
+    status: string,
+    inventory: string[],
+    history: Message[],
+    retries = 0
+): Promise<boolean> {
+    if (!lastRoleIs(history, 'user')) {
+        throw new Error('Action evaluation requested without user message.')
+    }
+
+    const [story, action] = history.slice(-2).map(msg => msg.content)
+
+    const evaluation = await getCompletion([
+        {
+            role: 'system',
+            content: [
+                'The player\'s health is in the following condition:',
+                status,
+                'The player\'s inventory contains the following items:',
+                itemsToNumberedList(inventory)
+            ].join('\n')
+        }, {
+            role: 'system',
+            content: [
+                'This turn of the game starts here:',
+                story
+            ].join('\n')
+        }, {
+            role: 'system',
+            content: [
+                'The player decided to take this action:',
+                action
+            ].join('\n')
+        }, {
+            role: 'system',
+            content: [
+                'You are the ruthless and decisive judge of an open ended adventure game.',
+                `The genre of this game is ${genre}.`,
+                'Given a turn in the game and the player\'s chosen action for this turn, you will judge how realistic their chosen action is.',
+                'Respond only with the words \'SUCCEED\' or \'FAIL\'',
+                'If the player\'s action is realistic and would succeed, respond with: SUCCEED',
+                'If the player\'s action is unrealistic and would fail, respond with: FAIL'
+            ].join(' ')
+        }, {
+            role: 'user',
+            content: 'What is the most realistic outcome of the player\'s chosen action?'
+        }
+    ])
+
+    console.log(action, evaluation)
+
+    switch (evaluation) {
+        case 'SUCCEED':
+            return true
+        case 'FAIL':
+            return false
+        default:
+            if (retries > 0) {
+                console.log('Retrying action evaluation, expected \'SUCCEED\' or \'FAIL\' recieved:', evaluation)
+                return evaluateAction(genre, status, inventory, history, retries - 1)
+            }
+
+            throw new Error(
+                'evaluateAction exceeded retry limit, ensure prompt requires \'SUCCEED\' or \'FAIL\' response only.'
+            )
+    }
+}
+
 async function updateStory(
     genre: string,
     status: string,
     inventory: string[],
-    history: Message[]
+    history: Message[],
+    actionSucceeded: boolean
 ): Promise<Message[]> {
     if (!lastRoleIs(history, 'user')) {
         throw new Error('Story update requested without user message.')
@@ -27,7 +97,10 @@ async function updateStory(
                 'The player\'s inventory contains the following items:',
                 itemsToNumberedList(inventory),
                 'The player\'s current condition is as follows:',
-                status
+                status,
+                actionSucceeded
+                    ? 'The player successfully performs their chosen action.'
+                    : 'The player failed to perform their chosen action.'
             ].join('\n')
         }
     ])
@@ -124,5 +197,6 @@ async function updateInventory(
 export {
     updateStory,
     updateStatus,
-    updateInventory
+    updateInventory,
+    evaluateAction
 }

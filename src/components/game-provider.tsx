@@ -2,9 +2,11 @@ import type { Message } from '../lib/openai'
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { genGenre, genPlayerState } from '../game/init'
-import { updateInventory, updateStatus, updateStory } from '../game/update'
+import { evaluateAction, updateInventory, updateStatus, updateStory } from '../game/update'
 import GameContext from '../hooks/game-context'
 import { lastRoleIs } from '../lib/openai'
+
+const START_MESSAGE = 'I\'d like to start the game. Please set the scene for this adventure.'
 
 interface GameProviderProps {
     children: ReactNode
@@ -17,9 +19,7 @@ function GameProvider(
     const [status, setStatus] = useState<string | null>(null)
     const [inventory, setInventory] = useState<string[] | null>(null)
     const [history, setHistory] = useState<Message[]>([])
-    const [userMessage, setUserMessage] = useState<string | null>(
-        'I\'d like to start the game, describe my surroundings.'
-    )
+    const [userMessage, setUserMessage] = useState<string | null>(START_MESSAGE)
 
     useEffect(() => {
         const initGame = async (): Promise<void> => {
@@ -45,23 +45,39 @@ function GameProvider(
             return
         }
 
-        const sendUserMessage = async (): Promise<Message[]> => {
-            console.log('Sending user message.')
+        history.push({ role: 'user', content: userMessage })
+        // Clear user message to prevent sending multiple times.
+        setUserMessage(null)
 
-            // Clear user message to prevent sending multiple times.
-            setUserMessage(null)
+        const evaluateUserAction = async (): Promise<boolean> => {
+            if (userMessage === START_MESSAGE) {
+                return true
+            }
+
+            console.log('Evaluating user action.')
+
+            const actionSucceeded = await evaluateAction(
+                genre,
+                status,
+                inventory,
+                history
+            )
+
+            return actionSucceeded
+        }
+
+        const sendUserAction = async (actionSucceeded: boolean): Promise<Message[]> => {
+            console.log('Sending user action.')
 
             const updated = await updateStory(
                 genre,
                 status,
                 inventory,
-                [
-                    ...history,
-                    { role: 'user', content: userMessage }
-                ]
+                history,
+                actionSucceeded
             )
-
             setHistory(updated)
+
             return updated
         }
 
@@ -82,7 +98,8 @@ function GameProvider(
             setInventory(newInventory)
         }
 
-        sendUserMessage()
+        evaluateUserAction()
+            .then(sendUserAction)
             .then(updatePlayerState)
             .catch(console.error)
     }, [genre, status, inventory, history, userMessage])
