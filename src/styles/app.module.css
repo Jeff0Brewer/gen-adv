@@ -3,9 +3,5 @@
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-columns: 220px 1fr;
-    grid-template-rows: 1fr 150px;
-    grid-template-areas:
-        "info story"
-        "info input";
+    place-content: center;
 }
