@@ -8,7 +8,6 @@ html, body {
     background-color: #000;
     color: #fff;
     font-family: system-ui, sans-serif;
-    font-weight: 300;
 }
 
 input[type="text"], textarea, button {
@@ -29,15 +28,4 @@ button, a {
 a {
     text-decoration: none;
     color: inherit;
-}
-
-.label {
-    color: #000;
-    font-size: 0.6rem;
-    font-weight: 500;
-    text-transform: uppercase;
-}
-
-button:hover {
-    filter: brightness(75%);
 }

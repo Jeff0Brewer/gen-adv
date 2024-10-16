@@ -1,74 +1,44 @@
-.message {
-    position: relative;
+.chat {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--accent);
-    align-items: stretch;
-    margin: 5px;
+    gap: 20px;
 }
 
-.label-bar {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.label-bar > label, .info-box > label {
-    padding: 1px 5px;
-}
-
-.label-bar > label {
-    background-color: var(--accent);
-}
-
-.info-box > label {
-    background-color: #fff;
-    width: fit-content;
-}
-
-.info-button {
-    background-color: var(--accent);
-    padding: 0 5px;
-    border-radius: 5px;
-    opacity: 0;
-}
-
-.info {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    padding: 10px;
-    text-align: left;
-}
-
-.info-box {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #fff;
-}
-
-.message:hover > .label-bar > .info-button {
-    opacity: 1;
-}
-
-.message > p, .info-box > p {
-    padding: 10px;
-}
-
-.message[data-role="assistant"] {
-    --accent: #99f;
+.message[data-role="user"] {
+    --accent: #f99;
 }
 
 .message[data-role="system"] {
     --accent: #9f9;
 }
 
-/* flip direction of user messages via role dataset attrib */
-.message[data-role="user"] .label-bar {
-    flex-direction: row-reverse;
+.message[data-role="assistant"] {
+    --accent: #99f;
 }
 
-.message[data-role="user"] {
-    --accent: #f99;
-    text-align: right;
+.message {
+    --label-height: 20px;
+    position: relative;
+    display: grid;
+    grid-template-rows: var(--label-height) 1fr;
+    background-color: #222;
+}
+
+.message > label {
+    position: relative;
+    background-color: var(--accent);
+    line-height: var(--label-height);
+    text-align: left;
+    padding: 0 5px;
+
+    color: #000;
+    text-transform: uppercase;
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+.message > div {
+    padding: 10px;
+    display: grid;
+    grid-template-rows: 
 }

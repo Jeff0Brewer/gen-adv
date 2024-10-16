@@ -33,7 +33,7 @@ function UserInput(
     return (
         <div className={styles.input}>
             <textarea ref={inputRef}></textarea>
-            <button className="label" onClick={sendMessage}>send</button>
+            <button onClick={sendMessage}>send</button>
         </div>
     )
 }

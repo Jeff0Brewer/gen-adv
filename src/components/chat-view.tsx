@@ -24,20 +24,14 @@ interface MessageViewProps {
 function MessageView(
     { message }: MessageViewProps
 ): ReactElement {
-    const [expanded, setExpanded] = useState<boolean>(false)
     const { role, content, source } = message
-
     return (
         <div className={styles.message} data-role={role}>
-            <div className={styles.labelBar}>
-                <label className="label">{role}</label>
-                <button className={`label ${styles.infoButton}`} onClick={() => setExpanded(!expanded)}>
-                    {expanded ? '- ' : '+ '}
-                    info
-                </button>
+            <label>{role}</label>
+            <div>
+                <p>{content}</p>
+                <MessageInfoView source={source} />
             </div>
-            {expanded && <MessageInfoView source={source} />}
-            <p>{content}</p>
         </div>
     )
 }
@@ -49,6 +43,7 @@ interface MessageInfoViewProps {
 function MessageInfoView(
     { source }: MessageInfoViewProps
 ): ReactElement {
+    const [expanded, setExpanded] = useState<boolean>(false)
     const [reasoningIndex, setReasoningIndex] = useState<number | null>(null)
 
     // Update reasoning index on message change.
@@ -79,23 +74,30 @@ function MessageInfoView(
     }, [reasoningIndex, source])
 
     return (
-        <div className={styles.info}>
-            <div className={styles.infoBox}>
-                <label className="label">description</label>
-                <p>{source.description}</p>
-            </div>
-            {source?.reasoning && reasoningIndex !== null && (
-                <div className={styles.infoBox}>
-                    <label className="label">reasoning</label>
+        <div>
+            <button onClick={() => setExpanded(!expanded)}>
+                {expanded ? 'info -' : 'info +'}
+            </button>
+            {expanded && (
+                <div>
                     <div>
-                        <button onClick={decReasoningIndex}>{'<'}</button>
-                        <p>
-                            attempt #
-                            {reasoningIndex + 1}
-                        </p>
-                        <button onClick={incReasoningIndex}>{'>'}</button>
+                        <label>description</label>
+                        <p>{source.description}</p>
                     </div>
-                    <ChatView chat={source.reasoning[reasoningIndex]} />
+                    {source?.reasoning && reasoningIndex !== null && (
+                        <div>
+                            <label>reasoning</label>
+                            <div>
+                                <button onClick={decReasoningIndex}>{'<'}</button>
+                                <p>
+                                    attempt #
+                                    {reasoningIndex + 1}
+                                </p>
+                                <button onClick={incReasoningIndex}>{'>'}</button>
+                            </div>
+                            <ChatView chat={source.reasoning[reasoningIndex]} />
+                        </div>
+                    )}
                 </div>
             )}
         </div>
