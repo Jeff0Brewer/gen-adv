@@ -1,8 +1,9 @@
 .message {
+    position: relative;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--accent);
-    align-items: flex-start;
+    align-items: stretch;
     margin: 5px;
 }
 
@@ -12,9 +13,17 @@
     gap: 4px;
 }
 
-.label-bar > label {
+.label-bar > label, .info-box > label {
     padding: 1px 5px;
+}
+
+.label-bar > label {
     background-color: var(--accent);
+}
+
+.info-box > label {
+    background-color: #fff;
+    width: fit-content;
 }
 
 .info-button {
@@ -24,11 +33,25 @@
     opacity: 0;
 }
 
+.info {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 10px;
+    text-align: left;
+}
+
+.info-box {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #fff;
+}
+
 .message:hover .info-button {
     opacity: 1;
 }
 
-.message > p {
+.message > p, .info-box > p {
     padding: 10px;
 }
 
@@ -47,5 +70,5 @@
 
 .message[data-role="user"] {
     --accent: #f99;
-    align-items: flex-end;
+    text-align: right;
 }

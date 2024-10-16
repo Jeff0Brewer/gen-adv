@@ -9,6 +9,7 @@ import styles from '@/styles/app.module.css'
 
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([])
+    const [expandedId, setExpandedId] = useState<string | null>(null)
 
     // Initialize game chat.
     useEffect(() => {
