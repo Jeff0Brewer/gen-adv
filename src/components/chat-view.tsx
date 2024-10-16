@@ -11,13 +11,25 @@ function ChatView(
 ): ReactElement {
     return (
         <section className={styles.chat}>
-            {chat.map(({ role, content }, i) => (
-                <div className={styles.message} data-role={role} key={i}>
-                    <label className="label">{role}</label>
-                    <p>{content}</p>
-                </div>
-            ))}
+            {chat.map((msg, i) => <MessageView message={msg} key={i} />)}
         </section>
+    )
+}
+
+interface MessageViewProps {
+    message: ChatMessage
+}
+
+function MessageView(
+    { message }: MessageViewProps
+): ReactElement {
+    const { role, content } = message
+
+    return (
+        <div className={styles.message} data-role={role}>
+            <label className="label">{role}</label>
+            <p>{content}</p>
+        </div>
     )
 }
 
