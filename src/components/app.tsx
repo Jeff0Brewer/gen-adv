@@ -2,14 +2,17 @@ import type { ReactElement } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import styles from '../styles/app.module.css'
 
-function App(): ReactElement {
-    const [chat, setChat] = useState<ChatMessage[]>([
-        { role: 'user', content: 'hello' },
-        { role: 'system', content: 'Respond as a mythical creature' }
-    ])
+interface UserInputProps {
+    chat: ChatMessage[]
+    setChat: (c: ChatMessage[]) => void
+}
+
+function UserInput(
+    { chat, setChat }: UserInputProps
+): ReactElement {
     const inputRef = useRef<HTMLTextAreaElement>(null)
 
-    const sendUserMessage = useCallback(() => {
+    const sendMessage = useCallback(() => {
         if (!inputRef.current) {
             throw new Error('No reference to dom element')
         }
@@ -18,7 +21,21 @@ function App(): ReactElement {
         setChat([...chat, { role: 'user', content }])
 
         inputRef.current.value = ''
-    }, [chat])
+    }, [chat, setChat])
+
+    return (
+        <div className={styles.input}>
+            <textarea ref={inputRef}></textarea>
+            <button onClick={sendMessage}>send</button>
+        </div>
+    )
+}
+
+function App(): ReactElement {
+    const [chat, setChat] = useState<ChatMessage[]>([
+        { role: 'system', content: 'Act as narrator for an open-ended RPG game.' },
+        { role: 'user', content: 'I want to start a new game, describe my surroundings.' }
+    ])
 
     useEffect(() => {
         const updateChat = async (): Promise<void> => {
@@ -42,10 +59,7 @@ function App(): ReactElement {
                         <p>{content}</p>
                     </div>
                 ))}
-                <section className={styles.input}>
-                    <textarea ref={inputRef}></textarea>
-                    <button onClick={sendUserMessage}>send</button>
-                </section>
+                <UserInput chat={chat} setChat={setChat} />
             </section>
         </main>
     )
