@@ -12,7 +12,6 @@ html, body {
     background-color: #000;
     color: #fff;
     font-family: system-ui, sans-serif;
-    overscroll-behavior-y: none;
 }
 
 input[type="text"], textarea, button {
