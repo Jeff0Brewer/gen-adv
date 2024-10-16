@@ -41,5 +41,6 @@ export {
 
 export type {
     ChatRole,
-    ChatMessage
+    ChatMessage,
+    ChatMessageSource
 }
