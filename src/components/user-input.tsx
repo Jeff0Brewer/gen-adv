@@ -1,7 +1,7 @@
-import type { ChatMessage } from '../lib/openai'
+import type { ChatMessage } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useCallback, useRef } from 'react'
-import styles from '../styles/app.module.css'
+import styles from '@/styles/app.module.css'
 
 interface UserInputProps {
     chat: ChatMessage[]
@@ -18,8 +18,14 @@ function UserInput(
             throw new Error('No reference to dom element')
         }
 
-        const content = inputRef.current.value
-        setChat([...chat, { role: 'user', content }])
+        const message: ChatMessage = {
+            role: 'user',
+            content: inputRef.current.value,
+            source: {
+                description: 'Message sent by user.'
+            }
+        }
+        setChat([...chat, message])
 
         inputRef.current.value = ''
     }, [chat, setChat])
