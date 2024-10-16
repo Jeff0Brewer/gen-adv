@@ -8,6 +8,7 @@ html, body {
     background-color: #000;
     color: #fff;
     font-family: system-ui, sans-serif;
+    font-weight: 300;
 }
 
 input[type="text"], textarea, button {
