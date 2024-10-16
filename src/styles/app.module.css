@@ -1,32 +1,43 @@
 .app {
     position: relative;
-    max-width: 900px;
+    max-width: 700px;
     width: 100%;
     margin: auto;
 }
 
-.chat {
-    position: relative;
-    width: 100%;
-    border: 1px solid #fff;
+.message[data-role="user"] {
+    --accent: #f99;
+}
+
+.message[data-role="assistant"] {
+    --accent: #99f;
+}
+
+.message[data-role="system"] {
+    --accent: #9f9;
 }
 
 .message {
-    padding: 10px;
     display: flex;
     flex-direction: column;
-}
-
-.message-label {
-    text-transform: uppercase;
-    font-size: 0.6rem;
+    border: 1px solid var(--accent);
+    align-items: flex-start;
+    margin: 5px;
 }
 
 .message[data-role="user"] {
     align-items: flex-end;
-    background-color: #115;
 }
 
-.message[data-role="assistant"] {
-    background-color: #000;
+.message > label {
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    background-color: var(--accent);
+}
+
+.message > p {
+    padding: 10px;
 }

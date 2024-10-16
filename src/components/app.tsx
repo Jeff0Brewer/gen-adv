@@ -4,16 +4,18 @@ import styles from '../styles/app.module.css'
 
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([
-        { role: 'user', content: 'hello' }
+        { role: 'user', content: 'hello' },
+        { role: 'system', content: 'Respond as a mythical creature' }
     ])
 
     useEffect(() => {
         const updateChat = async (): Promise<void> => {
-            if (chat[chat.length - 1].role === 'user') {
-                const completion = await getCompletion(chat)
-                setChat([...chat, completion])
+            if (chat[chat.length - 1].role === 'assistant') {
+                return
             }
 
+            const completion = await getCompletion(chat)
+            setChat([...chat, completion])
             console.log(chat)
         }
 
@@ -22,11 +24,11 @@ function App(): ReactElement {
 
     return (
         <main className={styles.app}>
-            <section className={styles.chat}>
+            <section>
                 {chat.map(({ role, content }) => (
                     <div className={styles.message} data-role={role}>
-                        <p className={styles.messageLabel}>{role}</p>
-                        <p className={styles.messageContent}>{content}</p>
+                        <label>{role}</label>
+                        <p>{content}</p>
                     </div>
                 ))}
             </section>
