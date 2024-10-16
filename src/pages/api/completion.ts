@@ -13,7 +13,10 @@ async function getCompletion(req: NextApiRequest, res: NextApiResponse): Promise
         messages: req.body.messages
     })
 
-    res.status(200).json(completion)
+    // Just send first choice for now.
+    const { message } = completion.choices[0]
+
+    res.status(200).json(message)
 }
 
 export default getCompletion
