@@ -2,8 +2,7 @@ type ChatRole = 'user' | 'assistant' | 'system' | 'tool'
 
 interface ChatMessageSource {
     description: string
-    reasoning?: ChatMessage[]
-
+    reasoning?: ChatMessage[][]
 }
 
 interface ChatMessage {

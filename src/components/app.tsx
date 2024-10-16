@@ -77,13 +77,15 @@ function isGenreOptions(obj: unknown): obj is GenreOptions {
     return genres.reduce((p, c) => p && typeof c === 'string', true)
 }
 
-async function generateGenre(retries = 3): Promise<ChatMessage> {
+async function generateGenre(retries = 3, reasoning: ChatMessage[][] = []): Promise<ChatMessage> {
     const prompt: ChatMessage[] = [
         userPrompt('Provide 10 interesting genres for an RPG game.'),
         systemPrompt('Write your answer in JSON format: { genres: [/* Your genre ideas here */] }')
     ]
 
     const completion = await getCompletion(prompt)
+
+    reasoning.push([...prompt, completion])
 
     // Parse can easily fail if completion is not valid JSON.
     let obj
@@ -97,7 +99,7 @@ async function generateGenre(retries = 3): Promise<ChatMessage> {
     // Retry generation if completion is invalid.
     if (!isGenreOptions(obj)) {
         if (retries > 0) {
-            return generateGenre(retries - 1)
+            return generateGenre(retries - 1, reasoning)
         }
         else {
             throw new Error('generateGenre reached its retry limit.')
@@ -112,8 +114,8 @@ async function generateGenre(retries = 3): Promise<ChatMessage> {
         role: 'system',
         content: `The genre of the game is ${genre}.`,
         source: {
-            description: `Genre '${genre}' was chosen at random from generated list of genres.`,
-            reasoning: [...prompt, completion]
+            description: `Genre '${genre}' was chosen at random from a generated list of genres.`,
+            reasoning
         }
     }
 }
