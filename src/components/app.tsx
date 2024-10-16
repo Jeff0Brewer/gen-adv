@@ -1,29 +1,11 @@
 import type { ChatMessage } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
+import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import { systemPrompt, userPrompt } from '@/lib/messages'
 import { randomChoice } from '@/lib/util'
 import styles from '@/styles/app.module.css'
-
-interface ChatViewProps {
-    chat: ChatMessage[]
-}
-
-function ChatView(
-    { chat }: ChatViewProps
-): ReactElement {
-    return (
-        <section className={styles.chat}>
-            {chat.map(({ role, content }, i) => (
-                <div className={styles.message} data-role={role} key={i}>
-                    <label>{role}</label>
-                    <p>{content}</p>
-                </div>
-            ))}
-        </section>
-    )
-}
 
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([])
