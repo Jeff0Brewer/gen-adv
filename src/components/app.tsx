@@ -1,35 +1,8 @@
+import type { ChatMessage } from '../lib/openai'
 import type { ReactElement } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import UserInput from '../components/user-input'
 import styles from '../styles/app.module.css'
-
-interface UserInputProps {
-    chat: ChatMessage[]
-    setChat: (c: ChatMessage[]) => void
-}
-
-function UserInput(
-    { chat, setChat }: UserInputProps
-): ReactElement {
-    const inputRef = useRef<HTMLTextAreaElement>(null)
-
-    const sendMessage = useCallback(() => {
-        if (!inputRef.current) {
-            throw new Error('No reference to dom element')
-        }
-
-        const content = inputRef.current.value
-        setChat([...chat, { role: 'user', content }])
-
-        inputRef.current.value = ''
-    }, [chat, setChat])
-
-    return (
-        <div className={styles.input}>
-            <textarea ref={inputRef}></textarea>
-            <button onClick={sendMessage}>send</button>
-        </div>
-    )
-}
 
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([
@@ -63,13 +36,6 @@ function App(): ReactElement {
             </section>
         </main>
     )
-}
-
-// Temporary types for openai messages / completions.
-type ChatRole = 'user' | 'system' | 'assistant'
-interface ChatMessage {
-    role: ChatRole
-    content: string
 }
 
 async function getCompletion(chat: ChatMessage[]): Promise<ChatMessage> {
