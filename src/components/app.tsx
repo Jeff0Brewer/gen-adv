@@ -1,7 +1,8 @@
-import type { ChatMessage } from '@/lib/openai'
+import type { ChatMessage } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
 import UserInput from '@/components/user-input'
+import { systemPrompt, userPrompt } from '@/lib/messages'
 import { randomChoice } from '@/lib/util'
 import styles from '@/styles/app.module.css'
 
@@ -13,9 +14,9 @@ function App(): ReactElement {
         const initGameChat = async (): Promise<void> => {
             const genreMessage = await generateGenre()
             const chat: ChatMessage[] = [
-                { role: 'system', content: 'Act as narrator for an open-ended RPG game.' },
+                systemPrompt('Act as narrator for an open-ended RPG game.'),
                 genreMessage,
-                { role: 'user', content: 'I want to start a new game, describe my surroundings.' }
+                userPrompt('I want to start a new game, describe my surroundings.')
             ]
             setChat(chat)
         }
@@ -77,12 +78,12 @@ function isGenreOptions(obj: unknown): obj is GenreOptions {
 }
 
 async function generateGenre(retries = 3): Promise<ChatMessage> {
-    const chat: ChatMessage[] = [
-        { role: 'user', content: 'Provide 10 interesting genres for an RPG game.' },
-        { role: 'system', content: 'Write your answer in JSON format: { genres: [/* Your genre ideas here */] }' }
+    const prompt: ChatMessage[] = [
+        userPrompt('Provide 10 interesting genres for an RPG game.'),
+        systemPrompt('Write your answer in JSON format: { genres: [/* Your genre ideas here */] }')
     ]
 
-    const completion = await getCompletion(chat)
+    const completion = await getCompletion(prompt)
 
     // Parse can easily fail if completion is not valid JSON.
     let obj
@@ -106,8 +107,15 @@ async function generateGenre(retries = 3): Promise<ChatMessage> {
     // Pick a random option from list of results to increase variability.
     const genre = randomChoice(obj.genres)
 
-    // Return as message.
-    return { role: 'system', content: `The genre of the game is ${genre}.` }
+    // Return as message to preserve source history.
+    return {
+        role: 'system',
+        content: `The genre of the game is ${genre}.`,
+        source: {
+            description: `Genre '${genre}' was chosen at random from generated list of genres.`,
+            reasoning: [...prompt, completion]
+        }
+    }
 }
 
 async function getCompletion(chat: ChatMessage[]): Promise<ChatMessage> {
@@ -117,6 +125,7 @@ async function getCompletion(chat: ChatMessage[]): Promise<ChatMessage> {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: chat })
     })
+
     return await res.json() as ChatMessage
 }
 
