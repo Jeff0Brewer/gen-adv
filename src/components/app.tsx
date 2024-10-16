@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import styles from '../styles/app.module.css'
 
 function App(): ReactElement {
@@ -7,6 +7,18 @@ function App(): ReactElement {
         { role: 'user', content: 'hello' },
         { role: 'system', content: 'Respond as a mythical creature' }
     ])
+    const inputRef = useRef<HTMLTextAreaElement>(null)
+
+    const sendUserMessage = useCallback(() => {
+        if (!inputRef.current) {
+            throw new Error('No reference to dom element')
+        }
+
+        const content = inputRef.current.value
+        setChat([...chat, { role: 'user', content }])
+
+        inputRef.current.value = ''
+    }, [chat])
 
     useEffect(() => {
         const updateChat = async (): Promise<void> => {
@@ -16,7 +28,6 @@ function App(): ReactElement {
 
             const completion = await getCompletion(chat)
             setChat([...chat, completion])
-            console.log(chat)
         }
 
         updateChat().catch(console.error)
@@ -32,8 +43,8 @@ function App(): ReactElement {
                     </div>
                 ))}
                 <section className={styles.input}>
-                    <textarea></textarea>
-                    <button>send</button>
+                    <textarea ref={inputRef}></textarea>
+                    <button onClick={sendUserMessage}>send</button>
                 </section>
             </section>
         </main>
