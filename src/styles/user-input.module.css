@@ -1,0 +1,17 @@
+.input {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 60px;
+    grid-template-rows: 25px;
+    margin: 5px;
+    border: 1px solid #fff;
+}
+
+.input > button {
+    background-color: #fff;
+    transition: background-color var(--timing);
+}
+
+.input > button:hover {
+    background-color: #f99;
+}

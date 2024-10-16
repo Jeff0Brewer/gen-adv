@@ -1,0 +1,29 @@
+.message {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--accent);
+    align-items: flex-start;
+    margin: 5px;
+}
+
+.message > label {
+    padding: 1px 5px;
+    background-color: var(--accent);
+}
+
+.message > p {
+    padding: 10px;
+}
+
+.message[data-role="user"] {
+    --accent: #f99;
+    align-items: flex-end;
+}
+
+.message[data-role="assistant"] {
+    --accent: #99f;
+}
+
+.message[data-role="system"] {
+    --accent: #9f9;
+}

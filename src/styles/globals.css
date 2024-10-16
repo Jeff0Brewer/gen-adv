@@ -34,6 +34,9 @@ a {
     color: inherit;
 }
 
-.hidden {
-    opacity: 0;
+.label {
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 500;
+    text-transform: uppercase;
 }

@@ -1,7 +1,7 @@
 import type { ChatMessage } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useCallback, useRef } from 'react'
-import styles from '@/styles/app.module.css'
+import styles from '@/styles/user-input.module.css'
 
 interface UserInputProps {
     chat: ChatMessage[]
@@ -33,7 +33,7 @@ function UserInput(
     return (
         <div className={styles.input}>
             <textarea ref={inputRef}></textarea>
-            <button onClick={sendMessage}>send</button>
+            <button className="label" onClick={sendMessage}>send</button>
         </div>
     )
 }
