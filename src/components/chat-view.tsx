@@ -27,7 +27,10 @@ function MessageView(
 
     return (
         <div className={styles.message} data-role={role}>
-            <label className="label">{role}</label>
+            <div className={styles.labelBar}>
+                <label className="label">{role}</label>
+                <button className={`label ${styles.infoButton}`}>+ info</button>
+            </div>
             <p>{content}</p>
         </div>
     )

@@ -9,9 +9,4 @@
 
 .input > button {
     background-color: #fff;
-    transition: background-color var(--timing);
-}
-
-.input > button:hover {
-    background-color: #f99;
 }

@@ -6,18 +6,30 @@
     margin: 5px;
 }
 
-.message > label {
+.label-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.label-bar > label {
     padding: 1px 5px;
     background-color: var(--accent);
 }
 
-.message > p {
-    padding: 10px;
+.info-button {
+    background-color: var(--accent);
+    padding: 0 5px;
+    border-radius: 5px;
+    opacity: 0;
 }
 
-.message[data-role="user"] {
-    --accent: #f99;
-    align-items: flex-end;
+.message:hover .info-button {
+    opacity: 1;
+}
+
+.message > p {
+    padding: 10px;
 }
 
 .message[data-role="assistant"] {
@@ -26,4 +38,14 @@
 
 .message[data-role="system"] {
     --accent: #9f9;
+}
+
+/* flip direction of user messages via role dataset attrib */
+.message[data-role="user"] .label-bar {
+    flex-direction: row-reverse;
+}
+
+.message[data-role="user"] {
+    --accent: #f99;
+    align-items: flex-end;
 }
