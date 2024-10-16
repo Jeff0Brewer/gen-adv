@@ -1,6 +1,6 @@
-import type { ChatMessage } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useCallback, useRef } from 'react'
+import { type ChatMessage, createMessage } from '@/lib/messages'
 import styles from '@/styles/user-input.module.css'
 
 interface UserInputProps {
@@ -18,13 +18,13 @@ function UserInput(
             throw new Error('No reference to dom element')
         }
 
-        const message: ChatMessage = {
-            role: 'user',
-            content: inputRef.current.value,
-            source: {
+        const message: ChatMessage = createMessage(
+            'user',
+            inputRef.current.value,
+            {
                 description: 'Message sent by user.'
             }
-        }
+        )
         setChat([...chat, message])
 
         inputRef.current.value = ''

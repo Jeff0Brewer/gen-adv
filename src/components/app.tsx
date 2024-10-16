@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
 import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
-import { systemPrompt, userPrompt } from '@/lib/messages'
+import { createMessage, systemPrompt, userPrompt } from '@/lib/messages'
 import { randomChoice } from '@/lib/util'
 import styles from '@/styles/app.module.css'
 
@@ -106,14 +106,14 @@ async function generateGenre(retries = 3, reasoning: ChatMessage[][] = []): Prom
     const genre = randomChoice(obj.genres)
 
     // Return as message to preserve source history.
-    return {
-        role: 'system',
-        content: `The genre of the game is ${genre}.`,
-        source: {
+    return createMessage(
+        'system',
+        `The genre of the game is ${genre}.`,
+        {
             description: `Genre '${genre}' was chosen at random from a generated list of genres.`,
             reasoning
         }
-    }
+    )
 }
 
 async function getCompletion(chat: ChatMessage[]): Promise<ChatMessage> {

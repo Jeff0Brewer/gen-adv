@@ -1,6 +1,7 @@
 import type { ChatMessage } from '@/lib/messages'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import OpenAI from 'openai'
+import { createMessage } from '@/lib/messages'
 
 const MODEL = 'gpt-3.5-turbo'
 
@@ -25,13 +26,11 @@ async function getCompletion(req: NextApiRequest, res: NextApiResponse): Promise
         return
     }
 
-    const message: ChatMessage = {
+    const message: ChatMessage = createMessage(
         role,
         content,
-        source: {
-            description: `Completion from ${MODEL}.`
-        }
-    }
+        { description: `Completion from ${MODEL}.` }
+    )
 
     res.status(200).json(message)
 }

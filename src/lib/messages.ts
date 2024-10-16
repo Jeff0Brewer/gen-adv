@@ -6,17 +6,23 @@ interface ChatMessageSource {
 }
 
 interface ChatMessage {
+    id: string
     role: ChatRole
     content: string
     source: ChatMessageSource
 }
 
+function createMessage(role: ChatRole, content: string, source: ChatMessageSource): ChatMessage {
+    const id = crypto.randomUUID()
+    return { id, role, content, source }
+}
+
 function promptMessage(role: ChatRole, content: string): ChatMessage {
-    return {
+    return createMessage(
         role,
         content,
-        source: { description: 'Static prompt.' }
-    }
+        { description: 'Static prompt.' }
+    )
 }
 
 function systemPrompt(content: string): ChatMessage {
@@ -28,6 +34,7 @@ function userPrompt(content: string): ChatMessage {
 }
 
 export {
+    createMessage,
     userPrompt,
     systemPrompt
 }
