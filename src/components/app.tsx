@@ -9,7 +9,6 @@ import styles from '@/styles/app.module.css'
 
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([])
-    const [expandedId, setExpandedId] = useState<string | null>(null)
 
     // Initialize game chat.
     useEffect(() => {
@@ -77,7 +76,7 @@ function isGenreOptions(obj: unknown): obj is GenreOptions {
 async function generateGenre(retries = 3, reasoning: ChatMessage[][] = []): Promise<ChatMessage> {
     const prompt: ChatMessage[] = [
         userPrompt('Provide 10 interesting genres for an RPG game.'),
-        systemPrompt('Write your answer in JSON format: { genres: [/* Your genre ideas here */] }')
+        systemPrompt('Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }')
     ]
 
     const completion = await getCompletion(prompt)

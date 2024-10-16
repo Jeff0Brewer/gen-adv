@@ -47,7 +47,7 @@
     border: 1px solid #fff;
 }
 
-.message:hover .info-button {
+.message:hover > .label-bar > .info-button {
     opacity: 1;
 }
 
