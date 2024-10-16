@@ -24,13 +24,17 @@ function App(): ReactElement {
 
     return (
         <main className={styles.app}>
-            <section>
+            <section className={styles.chat}>
                 {chat.map(({ role, content }) => (
                     <div className={styles.message} data-role={role}>
                         <label>{role}</label>
                         <p>{content}</p>
                     </div>
                 ))}
+                <section className={styles.input}>
+                    <textarea></textarea>
+                    <button>send</button>
+                </section>
             </section>
         </main>
     )
