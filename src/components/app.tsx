@@ -6,6 +6,25 @@ import { systemPrompt, userPrompt } from '@/lib/messages'
 import { randomChoice } from '@/lib/util'
 import styles from '@/styles/app.module.css'
 
+interface ChatViewProps {
+    chat: ChatMessage[]
+}
+
+function ChatView(
+    { chat }: ChatViewProps
+): ReactElement {
+    return (
+        <section className={styles.chat}>
+            {chat.map(({ role, content }, i) => (
+                <div className={styles.message} data-role={role} key={i}>
+                    <label>{role}</label>
+                    <p>{content}</p>
+                </div>
+            ))}
+        </section>
+    )
+}
+
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([])
 
@@ -41,12 +60,7 @@ function App(): ReactElement {
     return (
         <main className={styles.app}>
             <section className={styles.chat}>
-                {chat.map(({ role, content }) => (
-                    <div className={styles.message} data-role={role}>
-                        <label>{role}</label>
-                        <p>{content}</p>
-                    </div>
-                ))}
+                <ChatView chat={chat} />
                 <UserInput chat={chat} setChat={setChat} />
             </section>
         </main>
