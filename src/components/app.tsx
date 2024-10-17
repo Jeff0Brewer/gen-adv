@@ -75,7 +75,7 @@ function isGenreOptions(obj: unknown): obj is GenreOptions {
 
 async function generateGenre(retries = 3, reasoning: ChatMessage[][] = []): Promise<ChatMessage> {
     const prompt: ChatMessage[] = [
-        userPrompt('Provide 10 interesting genres for an RPG game. Try to be as unique and creative as possible.'),
+        userPrompt('Provide 10 interesting genres for an RPG game. Be unique and creative.'),
         systemPrompt('Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }')
     ]
 
