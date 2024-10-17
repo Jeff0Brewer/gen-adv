@@ -15,6 +15,7 @@ input[type="text"], textarea, button {
     color: inherit;
     border: none;
     background-color: transparent;
+    text-transform: inherit;
 }
 
 textarea {

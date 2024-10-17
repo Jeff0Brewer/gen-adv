@@ -1,6 +1,8 @@
 import type { ChatMessage, ChatMessageSource } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useCallback, useEffect, useState } from 'react'
+import { FaCaretLeft, FaCaretRight } from 'react-icons/fa'
+import { MdInfo } from 'react-icons/md'
 import styles from '@/styles/chat-view.module.css'
 
 interface ChatViewProps {
@@ -74,28 +76,30 @@ function MessageInfoView(
     }, [reasoningIndex, source])
 
     return (
-        <div>
-            <button onClick={() => setExpanded(!expanded)}>
-                {expanded ? 'info -' : 'info +'}
+        <div className={styles.info} data-expanded={expanded}>
+            <button className={styles.infoToggle} onClick={() => setExpanded(!expanded)}>
+                <MdInfo />
             </button>
             {expanded && (
-                <div>
-                    <div>
-                        <label>description</label>
-                        <p>{source.description}</p>
-                    </div>
-                    {source?.reasoning && reasoningIndex !== null && (
+                <div className={styles.infoList}>
+                    <p>{source.description}</p>
+                    {source.reasoning && reasoningIndex !== null && (
                         <div>
-                            <label>reasoning</label>
-                            <div>
-                                <button onClick={decReasoningIndex}>{'<'}</button>
+                            <div className={styles.reasoningSelect}>
+                                <button onClick={decReasoningIndex}>
+                                    <FaCaretLeft />
+                                </button>
                                 <p>
-                                    attempt #
+                                    generation attempt #
                                     {reasoningIndex + 1}
                                 </p>
-                                <button onClick={incReasoningIndex}>{'>'}</button>
+                                <button onClick={incReasoningIndex}>
+                                    <FaCaretRight />
+                                </button>
                             </div>
-                            <ChatView chat={source.reasoning[reasoningIndex]} />
+                            <div className={styles.chatWindow}>
+                                <ChatView chat={source.reasoning[reasoningIndex]} />
+                            </div>
                         </div>
                     )}
                 </div>
