@@ -22,7 +22,7 @@ function UserInput(
             'user',
             inputRef.current.value,
             {
-                description: 'Message sent by user.'
+                description: 'User choice.'
             }
         )
         setChat([...chat, message])
