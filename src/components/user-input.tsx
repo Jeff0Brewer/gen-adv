@@ -1,36 +1,39 @@
-import type { KeyboardEventHandler, ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { useCallback, useRef } from 'react'
-import { FaPlay } from 'react-icons/fa'
-import { useGameContext } from '../hooks/game-context'
-import { getRef } from '../lib/react'
-import styles from '../styles/user-input.module.css'
+import { type ChatMessage, createMessage } from '@/lib/messages'
+import styles from '@/styles/user-input.module.css'
 
-function UserInput(): ReactElement {
-    const { setUserMessage } = useGameContext()
+interface UserInputProps {
+    chat: ChatMessage[]
+    setChat: (c: ChatMessage[]) => void
+}
+
+function UserInput(
+    { chat, setChat }: UserInputProps
+): ReactElement {
     const inputRef = useRef<HTMLTextAreaElement>(null)
 
     const sendMessage = useCallback(() => {
-        const input = getRef(inputRef)
-
-        if (input.value.length > 0) {
-            setUserMessage(input.value)
-            input.value = ''
+        if (!inputRef.current) {
+            throw new Error('No reference to dom element')
         }
-    }, [setUserMessage])
 
-    const handleKey: KeyboardEventHandler = useCallback((e) => {
-        if (e.shiftKey && e.key === 'Enter') {
-            sendMessage()
-            e.preventDefault()
-        }
-    }, [sendMessage])
+        const message: ChatMessage = createMessage(
+            'user',
+            inputRef.current.value,
+            {
+                description: 'Message sent by user.'
+            }
+        )
+        setChat([...chat, message])
+
+        inputRef.current.value = ''
+    }, [chat, setChat])
 
     return (
         <div className={styles.input}>
-            <textarea ref={inputRef} onKeyPress={handleKey}></textarea>
-            <button onClick={sendMessage}>
-                <FaPlay />
-            </button>
+            <textarea ref={inputRef}></textarea>
+            <button onClick={sendMessage}>send</button>
         </div>
     )
 }

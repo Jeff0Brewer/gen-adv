@@ -1,12 +1,8 @@
 function randomChoice<T>(options: T[]): T {
-    return options[Math.floor(Math.random() * options.length)]
-}
-
-function ensureArray<T>(value: T | T[]): T[] {
-    return Array.isArray(value) ? value : [value]
+    const index = Math.floor(Math.random() * options.length)
+    return options[index]
 }
 
 export {
-    randomChoice,
-    ensureArray
+    randomChoice
 }
