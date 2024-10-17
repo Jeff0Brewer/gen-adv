@@ -60,21 +60,6 @@ function MessageInfoView(
         setReasoningIndex(source.reasoning.length - 1)
     }, [source])
 
-    const incReasoningIndex = useCallback(() => {
-        if (reasoningIndex === null || !source?.reasoning) {
-            return
-        }
-        setReasoningIndex((reasoningIndex + 1) % source.reasoning.length)
-    }, [reasoningIndex, source])
-
-    const decReasoningIndex = useCallback(() => {
-        if (reasoningIndex === null || !source?.reasoning) {
-            return
-        }
-        const numAttempts = source.reasoning.length
-        setReasoningIndex((reasoningIndex - 1 + numAttempts) % numAttempts)
-    }, [reasoningIndex, source])
-
     return (
         <div className={styles.info} data-expanded={expanded}>
             <button className={styles.infoToggle} onClick={() => setExpanded(!expanded)}>
@@ -85,17 +70,13 @@ function MessageInfoView(
                     <p>{source.description}</p>
                     {source.reasoning && reasoningIndex !== null && (
                         <div>
-                            <div className={styles.reasoningSelect}>
-                                <button onClick={decReasoningIndex}>
-                                    <FaCaretLeft />
-                                </button>
-                                <p>
-                                    generation attempt #
-                                    {reasoningIndex + 1}
-                                </p>
-                                <button onClick={incReasoningIndex}>
-                                    <FaCaretRight />
-                                </button>
+                            <p>Generation Attempts</p>
+                            <div className={styles.indexSelect}>
+                                {source.reasoning.map((_, i) => (
+                                    <button onClick={() => setReasoningIndex(i)} data-active={reasoningIndex === i}>
+                                        {i + 1}
+                                    </button>
+                                ))}
                             </div>
                             <div className={styles.chatWindow}>
                                 <ChatView chat={source.reasoning[reasoningIndex]} />
