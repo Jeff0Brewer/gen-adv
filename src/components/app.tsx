@@ -1,6 +1,6 @@
-import type { Chat } from '@/lib/messages'
+import type { Chat, ChatMessage } from '@/lib/messages'
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import { generateGenre, getCompletion } from '@/lib/generation'
@@ -10,6 +10,15 @@ import styles from '@/styles/app.module.css'
 
 function App(): ReactElement {
     const [chat, setChat] = useState<Chat>([])
+
+    const sendUserMessage = useCallback((message: ChatMessage): boolean => {
+        if (!isResolved(chat)) {
+            return false
+        }
+
+        setChat([...chat, message])
+        return true
+    }, [chat])
 
     // Manage current game state.
     useEffect(() => {
@@ -43,7 +52,7 @@ function App(): ReactElement {
         <main className={styles.app}>
             <section className={styles.chat}>
                 <ChatView chat={chat} />
-                <UserInput chat={chat} setChat={setChat} />
+                <UserInput sendMessage={sendUserMessage} />
             </section>
         </main>
     )
