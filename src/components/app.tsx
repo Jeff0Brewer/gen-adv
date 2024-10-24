@@ -1,6 +1,6 @@
 import type { ChatMessage } from '@/lib/messages'
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import { createMessage, systemPrompt, userPrompt } from '@/lib/messages'
@@ -10,37 +10,32 @@ import styles from '@/styles/app.module.css'
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([])
 
-    // Start game on component mount.
-    useEffect(() => {
-        const initGameChat = async (): Promise<void> => {
-            // Generate genre separately to improve variability.
-            const genrePrompt = await generateGenre()
+    const initGame = useCallback(async (): Promise<void> => {
+        // Generate genre separately to improve variability.
+        const genrePrompt = await generateGenre()
 
-            // Initial prompt for narration.
-            setChat([
-                systemPrompt('Act as narrator for an open-ended RPG game.'),
-                genrePrompt,
-                userPrompt('I want to start a new game, describe my surroundings.')
-            ])
-        }
-
-        initGameChat().catch(console.error)
+        // Initial prompt for narration.
+        setChat([
+            systemPrompt('Act as narrator for an open-ended RPG game.'),
+            genrePrompt,
+            userPrompt('I want to start a new game, describe my surroundings.')
+        ])
     }, [])
 
-    // Generate responses to user messages.
+    const generateResponse = useCallback(async (chat: ChatMessage[]): Promise<void> => {
+        const completion = await getCompletion(chat)
+        setChat([...chat, completion])
+    }, [])
+
+    // Manage current game state.
     useEffect(() => {
-        const updateChat = async (): Promise<void> => {
-            if (chat[chat.length - 1]?.role !== 'user') {
-                return
-            }
-
-            // Simple completion for testing.
-            const completion = await getCompletion(chat)
-            setChat([...chat, completion])
+        if (chat.length === 0) {
+            initGame().catch(console.error)
         }
-
-        updateChat().catch(console.error)
-    }, [chat])
+        else if (chat[chat.length - 1]?.role === 'user') {
+            generateResponse(chat).catch(console.error)
+        }
+    }, [chat, initGame, generateResponse])
 
     return (
         <main className={styles.app}>
