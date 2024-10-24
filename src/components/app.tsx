@@ -10,16 +10,18 @@ import styles from '@/styles/app.module.css'
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([])
 
-    // Initialize game chat.
+    // Start game on component mount.
     useEffect(() => {
         const initGameChat = async (): Promise<void> => {
-            const genreMessage = await generateGenre()
-            const chat: ChatMessage[] = [
+            // Generate genre separately to improve variability.
+            const genrePrompt = await generateGenre()
+
+            // Initial prompt for narration.
+            setChat([
                 systemPrompt('Act as narrator for an open-ended RPG game.'),
-                genreMessage,
+                genrePrompt,
                 userPrompt('I want to start a new game, describe my surroundings.')
-            ]
-            setChat(chat)
+            ])
         }
 
         initGameChat().catch(console.error)
@@ -28,10 +30,11 @@ function App(): ReactElement {
     // Generate responses to user messages.
     useEffect(() => {
         const updateChat = async (): Promise<void> => {
-            if (chat.length === 0 || chat[chat.length - 1].role !== 'user') {
+            if (chat[chat.length - 1]?.role !== 'user') {
                 return
             }
 
+            // Simple completion for testing.
             const completion = await getCompletion(chat)
             setChat([...chat, completion])
         }
@@ -50,7 +53,7 @@ function App(): ReactElement {
 }
 
 // Output format for genre options generation.
-// Responses not in this format will retry.
+// Responses not in this format will error.
 interface GenreOptions {
     genres: string[]
 }
