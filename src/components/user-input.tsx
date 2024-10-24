@@ -14,18 +14,15 @@ function UserInput(
     const inputRef = useRef<HTMLTextAreaElement>(null)
 
     const sendMessage = useCallback(() => {
-        if (!inputRef.current) {
-            throw new Error('No reference to dom element')
+        const content = inputRef.current?.value
+        if (!content) {
+            throw new Error('No content in user input.')
         }
 
-        const message: ChatMessage = createMessage(
-            'user',
-            inputRef.current.value,
-            {
-                description: 'User choice.'
-            }
-        )
-        setChat([...chat, message])
+        setChat([
+            ...chat,
+            createMessage('user', content, { description: 'User choice.' })
+        ])
 
         inputRef.current.value = ''
     }, [chat, setChat])
