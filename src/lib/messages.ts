@@ -17,7 +17,7 @@ function createMessage(role: ChatRole, content: string, source: ChatMessageSourc
     return { id, role, content, source }
 }
 
-function promptMessage(role: ChatRole, content: string): ChatMessage {
+function staticPromptMessage(role: ChatRole, content: string): ChatMessage {
     return createMessage(
         role,
         content,
@@ -25,18 +25,18 @@ function promptMessage(role: ChatRole, content: string): ChatMessage {
     )
 }
 
-function systemPrompt(content: string): ChatMessage {
-    return promptMessage('system', content)
+function staticSystemPrompt(content: string): ChatMessage {
+    return staticPromptMessage('system', content)
 }
 
-function userPrompt(content: string): ChatMessage {
-    return promptMessage('user', content)
+function staticUserPrompt(content: string): ChatMessage {
+    return staticPromptMessage('user', content)
 }
 
 export {
     createMessage,
-    userPrompt,
-    systemPrompt
+    staticUserPrompt,
+    staticSystemPrompt
 }
 
 export type {

@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
-import { createMessage, systemPrompt, userPrompt } from '@/lib/messages'
+import { createMessage, staticSystemPrompt, staticUserPrompt } from '@/lib/messages'
 import { randomChoice } from '@/lib/util'
 import styles from '@/styles/app.module.css'
 
@@ -16,9 +16,9 @@ function App(): ReactElement {
 
         // Initial prompt for narration.
         setChat([
-            systemPrompt('Act as narrator for an open-ended RPG game.'),
+            staticSystemPrompt('Act as narrator for an open-ended RPG game.'),
             genrePrompt,
-            userPrompt('I want to start a new game, describe my surroundings.')
+            staticUserPrompt('I want to start a new game, describe my surroundings.')
         ])
     }, [])
 
@@ -73,8 +73,8 @@ function isGenreOptions(obj: unknown): obj is GenreOptions {
 
 async function generateGenre(retries = 3, reasoning: ChatMessage[][] = []): Promise<ChatMessage> {
     const prompt: ChatMessage[] = [
-        userPrompt('Provide 10 interesting genres for an RPG game. Be unique and creative.'),
-        systemPrompt('Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }')
+        staticUserPrompt('Provide 10 interesting genres for an RPG game. Be unique and creative.'),
+        staticSystemPrompt('Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }')
     ]
 
     const completion = await getCompletion(prompt)
