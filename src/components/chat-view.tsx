@@ -72,7 +72,7 @@ function MessageInfoView(
                             <p>Generation Attempts</p>
                             <div className={styles.indexSelect}>
                                 {source.reasoning.map((_, i) => (
-                                    <button onClick={() => setReasoningIndex(i)} data-active={reasoningIndex === i}>
+                                    <button key={i} onClick={() => setReasoningIndex(i)} data-active={reasoningIndex === i}>
                                         {i + 1}
                                     </button>
                                 ))}
