@@ -1,3 +1,5 @@
+type Chat = (ChatMessage | Promise<ChatMessage>)[]
+
 type ChatRole = 'user' | 'assistant' | 'system' | 'tool'
 
 interface ChatMessageSource {
@@ -40,6 +42,7 @@ export {
 }
 
 export type {
+    Chat,
     ChatRole,
     ChatMessage,
     ChatMessageSource

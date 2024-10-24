@@ -1,41 +1,49 @@
-import type { ChatMessage } from '@/lib/messages'
+import type { Chat } from '@/lib/messages'
 import type { ReactElement } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import { generateGenre, getCompletion } from '@/lib/generation'
 import { staticSystemPrompt, staticUserPrompt } from '@/lib/messages'
 import styles from '@/styles/app.module.css'
 
+function isLoaded<T>(list: (T | Promise<T>)[]): list is T[] {
+    return !list.reduce(
+        (hasPromise, item) => (hasPromise || item instanceof Promise),
+        false
+    )
+}
+
 function App(): ReactElement {
-    const [chat, setChat] = useState<ChatMessage[]>([])
-
-    const initializeGame = useCallback(async (): Promise<void> => {
-        // Generate genre separately to improve variability.
-        const genrePrompt = await generateGenre()
-
-        // Initial prompt for narration.
-        setChat([
-            staticSystemPrompt('Act as narrator for an open-ended RPG game.'),
-            genrePrompt,
-            staticUserPrompt('I want to start a new game, describe my surroundings.')
-        ])
-    }, [])
-
-    const generateResponse = useCallback(async (chat: ChatMessage[]): Promise<void> => {
-        const completion = await getCompletion(chat)
-        setChat([...chat, completion])
-    }, [])
+    const [chat, setChat] = useState<Chat>([])
 
     // Manage current game state.
     useEffect(() => {
+        // Load all messages before generating more.
+        if (!isLoaded(chat)) {
+            Promise.all(chat)
+                .then(c => setChat([...c]))
+                .catch(console.error)
+            return
+        }
+
         if (chat.length === 0) {
-            initializeGame().catch(console.error)
+            // Initialize game if chat empty.
+            setChat([
+                staticSystemPrompt('Act as narrator for an open-ended RPG game.'),
+                // Generate genre separately to improve variability.
+                generateGenre(),
+                staticUserPrompt('I want to start a new game, describe my surroundings.')
+            ])
         }
         else if (chat[chat.length - 1]?.role === 'user') {
-            generateResponse(chat).catch(console.error)
+            // Generate narration if last message from user.
+            setChat([
+                ...chat,
+                getCompletion(chat)
+            ])
         }
-    }, [chat, initializeGame, generateResponse])
+    }, [chat])
 
     return (
         <main className={styles.app}>

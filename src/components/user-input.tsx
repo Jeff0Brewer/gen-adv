@@ -1,11 +1,12 @@
+import type { Chat } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useCallback, useRef } from 'react'
-import { type ChatMessage, createMessage } from '@/lib/messages'
+import { createMessage } from '@/lib/messages'
 import styles from '@/styles/user-input.module.css'
 
 interface UserInputProps {
-    chat: ChatMessage[]
-    setChat: (c: ChatMessage[]) => void
+    chat: Chat
+    setChat: (c: Chat) => void
 }
 
 function UserInput(

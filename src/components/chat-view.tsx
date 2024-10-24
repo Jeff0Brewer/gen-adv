@@ -1,4 +1,4 @@
-import type { ChatMessage, ChatMessageSource } from '@/lib/messages'
+import type { Chat, ChatMessage, ChatMessageSource } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
 import { MdInfo } from 'react-icons/md'
@@ -6,7 +6,7 @@ import styles from '@/styles/chat-view.module.css'
 
 // Debug view for full chat history.
 interface ChatViewProps {
-    chat: ChatMessage[]
+    chat: Chat
 }
 
 function ChatView(
@@ -14,16 +14,35 @@ function ChatView(
 ): ReactElement {
     return (
         <section className={styles.chat}>
-            {chat.map(({ role, content, source }, i) => (
-                <div className={styles.message} data-role={role} key={i}>
-                    <label>{role}</label>
-                    <div>
-                        <p>{content}</p>
-                        <SourceView source={source} />
-                    </div>
-                </div>
-            ))}
+            {chat.map((msg, i) =>
+                <MessageView message={msg} key={i} />
+            )}
         </section>
+    )
+}
+
+interface MessageViewProps {
+    message: ChatMessage | Promise<ChatMessage>
+}
+
+function MessageView(
+    { message }: MessageViewProps
+): ReactElement {
+    const loading = message instanceof Promise
+
+    return (
+        <div className={styles.message} data-role={loading ? 'loading' : message.role}>
+            {!loading && (
+                <>
+                    <label>{message.role}</label>
+                    <div>
+                        <p>{message.content}</p>
+                        <SourceView source={message.source} />
+                    </div>
+
+                </>
+            )}
+        </div>
     )
 }
 
