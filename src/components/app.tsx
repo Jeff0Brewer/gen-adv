@@ -10,7 +10,7 @@ import styles from '@/styles/app.module.css'
 function App(): ReactElement {
     const [chat, setChat] = useState<ChatMessage[]>([])
 
-    const initGame = useCallback(async (): Promise<void> => {
+    const initializeGame = useCallback(async (): Promise<void> => {
         // Generate genre separately to improve variability.
         const genrePrompt = await generateGenre()
 
@@ -30,12 +30,12 @@ function App(): ReactElement {
     // Manage current game state.
     useEffect(() => {
         if (chat.length === 0) {
-            initGame().catch(console.error)
+            initializeGame().catch(console.error)
         }
         else if (chat[chat.length - 1]?.role === 'user') {
             generateResponse(chat).catch(console.error)
         }
-    }, [chat, initGame, generateResponse])
+    }, [chat, initializeGame, generateResponse])
 
     return (
         <main className={styles.app}>
