@@ -52,14 +52,13 @@ function MessageInfoView(
 
     // Update reasoning index on message change.
     useEffect(() => {
-        // Don't need index if no reasoning.
-        if (!reasoning) {
+        if (!reasoning || reasoning.length === 0) {
             setReasoningIndex(null)
-            return
         }
-
-        // Default to last attempt.
-        setReasoningIndex(reasoning.length - 1)
+        else {
+            // Default to final reasoning attempt.
+            setReasoningIndex(reasoning.length - 1)
+        }
     }, [reasoning])
 
     return (
