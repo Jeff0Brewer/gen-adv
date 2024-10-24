@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { MdInfo } from 'react-icons/md'
 import styles from '@/styles/chat-view.module.css'
 
+// Debug view for full chat history.
 interface ChatViewProps {
     chat: ChatMessage[]
 }
@@ -13,31 +14,21 @@ function ChatView(
 ): ReactElement {
     return (
         <section className={styles.chat}>
-            {chat.map((msg, i) =>
-                <MessageView message={msg} key={i} />)}
+            {chat.map(({ role, content, source }, i) => (
+                <div className={styles.message} data-role={role} key={i}>
+                    <label>{role}</label>
+                    <div>
+                        <p>{content}</p>
+                        <SourceView source={source} />
+                    </div>
+                </div>
+            ))}
         </section>
     )
 }
 
-interface MessageViewProps {
-    message: ChatMessage
-}
-
-function MessageView(
-    { message }: MessageViewProps
-): ReactElement {
-    const { role, content, source } = message
-    return (
-        <div className={styles.message} data-role={role}>
-            <label>{role}</label>
-            <div>
-                <p>{content}</p>
-                <SourceView source={source} />
-            </div>
-        </div>
-    )
-}
-
+// Displays information about source of messages to debug generation.
+// Includes full context of message rationale + generation attempt history.
 interface SourceViewProps {
     source: ChatMessageSource
 }
@@ -46,7 +37,6 @@ function SourceView(
     { source }: SourceViewProps
 ): ReactElement {
     const [expanded, setExpanded] = useState<boolean>(false)
-
     const { description, reasoning } = source
 
     return (
@@ -64,6 +54,8 @@ function SourceView(
     )
 }
 
+// Displays full chat history for intermediate generation steps used to construct message.
+// Recursively uses `ChatView` component to display as many layers of generation as needed.
 interface ReasoningViewProps {
     reasoning?: ChatMessage[][]
 }
