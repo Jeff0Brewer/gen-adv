@@ -1,9 +1,12 @@
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
+@keyframes load {
+    0% {
+        background-color: #fff;
     }
-    to {
-        transform: rotate(360deg);
+    50% {
+        background-color: #666;
+    }
+    100% {
+        background-color: #fff;
     }
 }
 
@@ -26,19 +29,9 @@
 }
 
 .message[data-role="loading"] {
-    display: grid;
-    place-items: center;
-    padding: 30px;
-}
-
-.message[data-role="loading"]::before {
-    content: '';
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    clip-path: rect(0 0 50% 100%);
-    animation: rotate 1s linear infinite;
+    height: 20px;
+    animation: load 3s ease-in-out infinite;
+    text-align: left;
 }
 
 .message {

@@ -32,16 +32,18 @@ function MessageView(
 
     return (
         <div className={styles.message} data-role={loading ? 'loading' : message.role}>
-            {!loading && (
-                <>
-                    <label>{message.role}</label>
-                    <div>
-                        <p>{message.content}</p>
-                        <SourceView source={message.source} />
-                    </div>
+            {loading
+                ? <label>loading...</label>
+                : (
+                    <>
+                        <label>{message.role}</label>
+                        <div>
+                            <p>{message.content}</p>
+                            <SourceView source={message.source} />
+                        </div>
 
-                </>
-            )}
+                    </>
+                )}
         </div>
     )
 }

@@ -16,7 +16,7 @@ function App(): ReactElement {
         // Load all messages before generating more.
         if (!isResolved(chat)) {
             Promise.all(chat)
-                .then(c => setChat([...c]))
+                .then(setChat)
                 .catch(console.error)
             return
         }
