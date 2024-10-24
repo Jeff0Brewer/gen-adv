@@ -32,23 +32,46 @@ function MessageView(
             <label>{role}</label>
             <div>
                 <p>{content}</p>
-                <MessageInfoView source={source} />
+                <SourceView source={source} />
             </div>
         </div>
     )
 }
 
-interface MessageInfoViewProps {
+interface SourceViewProps {
     source: ChatMessageSource
 }
 
-function MessageInfoView(
-    { source }: MessageInfoViewProps
+function SourceView(
+    { source }: SourceViewProps
 ): ReactElement {
     const [expanded, setExpanded] = useState<boolean>(false)
-    const [reasoningIndex, setReasoningIndex] = useState<number | null>(null)
 
     const { description, reasoning } = source
+
+    return (
+        <div className={styles.info} data-expanded={expanded}>
+            <button className={styles.infoToggle} onClick={() => setExpanded(!expanded)}>
+                <MdInfo />
+            </button>
+            {expanded && (
+                <div className={styles.infoList}>
+                    <p>{description}</p>
+                    <ReasoningView reasoning={reasoning} />
+                </div>
+            )}
+        </div>
+    )
+}
+
+interface ReasoningViewProps {
+    reasoning: ChatMessage[][] | undefined
+}
+
+function ReasoningView(
+    { reasoning }: ReasoningViewProps
+): ReactElement {
+    const [reasoningIndex, setReasoningIndex] = useState<number | null>(null)
 
     // Update reasoning index on message change.
     useEffect(() => {
@@ -61,31 +84,24 @@ function MessageInfoView(
         }
     }, [reasoning])
 
+    // Do not render anything if no reasoning present.
+    if (!reasoning?.length || reasoningIndex === null) {
+        return <></>
+    }
+
     return (
-        <div className={styles.info} data-expanded={expanded}>
-            <button className={styles.infoToggle} onClick={() => setExpanded(!expanded)}>
-                <MdInfo />
-            </button>
-            {expanded && (
-                <div className={styles.infoList}>
-                    <p>{description}</p>
-                    {reasoning && reasoningIndex !== null && (
-                        <div>
-                            <p>Generation Attempts</p>
-                            <div className={styles.indexSelect}>
-                                {reasoning.map((_, i) => (
-                                    <button key={i} onClick={() => setReasoningIndex(i)} data-active={reasoningIndex === i}>
-                                        {i + 1}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className={styles.chatWindow}>
-                                <ChatView chat={reasoning[reasoningIndex]} />
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
+        <div>
+            <p>Generation Attempts</p>
+            <div className={styles.indexSelect}>
+                {reasoning.map((_, i) => (
+                    <button key={i} onClick={() => setReasoningIndex(i)} data-active={reasoningIndex === i}>
+                        {i + 1}
+                    </button>
+                ))}
+            </div>
+            <div className={styles.chatWindow}>
+                <ChatView chat={reasoning[reasoningIndex]} />
+            </div>
         </div>
     )
 }
