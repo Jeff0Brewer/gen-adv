@@ -5,14 +5,8 @@ import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import { generateGenre, getCompletion } from '@/lib/generation'
 import { staticSystemPrompt, staticUserPrompt } from '@/lib/messages'
+import { isResolved } from '@/lib/util'
 import styles from '@/styles/app.module.css'
-
-function isLoaded<T>(list: (T | Promise<T>)[]): list is T[] {
-    return !list.reduce(
-        (hasPromise, item) => (hasPromise || item instanceof Promise),
-        false
-    )
-}
 
 function App(): ReactElement {
     const [chat, setChat] = useState<Chat>([])
@@ -20,7 +14,7 @@ function App(): ReactElement {
     // Manage current game state.
     useEffect(() => {
         // Load all messages before generating more.
-        if (!isLoaded(chat)) {
+        if (!isResolved(chat)) {
             Promise.all(chat)
                 .then(c => setChat([...c]))
                 .catch(console.error)
