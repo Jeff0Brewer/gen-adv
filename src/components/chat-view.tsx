@@ -1,7 +1,6 @@
 import type { ChatMessage, ChatMessageSource } from '@/lib/messages'
 import type { ReactElement } from 'react'
-import { useCallback, useEffect, useState } from 'react'
-import { FaCaretLeft, FaCaretRight } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
 import { MdInfo } from 'react-icons/md'
 import styles from '@/styles/chat-view.module.css'
 
