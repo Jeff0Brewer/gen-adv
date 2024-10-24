@@ -65,7 +65,7 @@ function SourceView(
 }
 
 interface ReasoningViewProps {
-    reasoning: ChatMessage[][] | undefined
+    reasoning?: ChatMessage[][]
 }
 
 function ReasoningView(
