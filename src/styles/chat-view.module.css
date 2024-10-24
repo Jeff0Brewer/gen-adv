@@ -1,3 +1,12 @@
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .chat {
     display: flex;
     flex-direction: column;
@@ -14,6 +23,22 @@
 
 .message[data-role="assistant"] {
     --accent: #99f;
+}
+
+.message[data-role="loading"] {
+    display: grid;
+    place-items: center;
+    padding: 30px;
+}
+
+.message[data-role="loading"]::before {
+    content: '';
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    clip-path: rect(0 0 50% 100%);
+    animation: rotate 1s linear infinite;
 }
 
 .message {
