@@ -1,11 +1,10 @@
-import type { Chat, ChatMessage } from '@/lib/messages'
+import type { Message } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useCallback, useRef } from 'react'
-import { createMessage } from '@/lib/messages'
 import styles from '@/styles/user-input.module.css'
 
 interface UserInputProps {
-    sendMessage: (m: ChatMessage) => boolean
+    sendMessage: (m: Message) => boolean
 }
 
 function UserInput(
@@ -19,8 +18,11 @@ function UserInput(
             throw new Error('No content in user input.')
         }
 
-        const message = createMessage('user', content, { description: 'User choice.' })
-        const success = sendMessage(message)
+        const success = sendMessage({
+            agent: 'user',
+            content,
+            source: { description: 'User input.' }
+        })
 
         if (success) {
             inputRef.current.value = ''

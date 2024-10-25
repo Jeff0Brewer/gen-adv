@@ -1,16 +1,18 @@
-import type { ChatMessage } from '@/lib/messages'
-import { createMessage, staticSystemPrompt, staticUserPrompt } from '@/lib/messages'
+import type { Message } from '@/lib/messages'
 import { randomChoice } from '@/lib/util'
 
-async function getCompletion(chat: ChatMessage[]): Promise<ChatMessage> {
+async function getCompletion(chat: Message[], agent: string): Promise<Message> {
     const res = await fetch('/api/completion', {
         method: 'POST',
         cache: 'no-cache',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: chat })
+        body: JSON.stringify({
+            agent,
+            messages: chat
+        })
     })
 
-    return await res.json() as ChatMessage
+    return await res.json() as Message
 }
 
 // Output format for genre options generation.
@@ -37,12 +39,20 @@ function isGenreOptions(obj: unknown): obj is GenreOptions {
     return genres.reduce((p, c) => p && typeof c === 'string', true)
 }
 
-async function generateGenre(retries = 3, reasoning: ChatMessage[][] = []): Promise<ChatMessage> {
-    const prompt: ChatMessage[] = [
-        staticUserPrompt('Provide 10 interesting genres for an RPG game. Be unique and creative.'),
-        staticSystemPrompt('Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }')
+async function generateGenre(retries = 3, reasoning: Message[][] = []): Promise<Message> {
+    const prompt: Message[] = [
+        {
+            agent: 'user',
+            content: 'Provide 10 interesting genres for an RPG game. Be unique and creative.',
+            source: { description: 'Static prompt.' }
+        },
+        {
+            agent: 'system',
+            content: 'Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }',
+            source: { description: 'Static prompt.' }
+        }
     ]
-    const completion = await getCompletion(prompt)
+    const completion = await getCompletion(prompt, 'genre')
 
     // Push completion to reasoning history regardless of output for debug.
     reasoning.push([...prompt, completion])
@@ -70,14 +80,14 @@ async function generateGenre(retries = 3, reasoning: ChatMessage[][] = []): Prom
     const genre = randomChoice(obj.genres)
 
     // Return as message to preserve source history.
-    return createMessage(
-        'system',
-        `The genre of the game is ${genre}.`,
-        {
+    return {
+        agent: 'genre',
+        content: `The genre of the game is ${genre}.`,
+        source: {
             description: `Genre '${genre}' was chosen at random from a generated list of genres.`,
             reasoning
         }
-    )
+    }
 }
 
 export {

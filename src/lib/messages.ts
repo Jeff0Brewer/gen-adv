@@ -1,49 +1,65 @@
-type Chat = (ChatMessage | Promise<ChatMessage>)[]
-
-type ChatRole = 'user' | 'assistant' | 'system' | 'tool'
-
-interface ChatMessageSource {
-    description: string
-    reasoning?: ChatMessage[][]
-}
-
-interface ChatMessage {
-    id: string
-    role: ChatRole
+interface Message {
+    agent: string
     content: string
-    source: ChatMessageSource
+    source: MessageSource
 }
 
-function createMessage(role: ChatRole, content: string, source: ChatMessageSource): ChatMessage {
-    const id = crypto.randomUUID()
-    return { id, role, content, source }
+interface MessageSource {
+    description: string
+    reasoning?: Message[][]
 }
 
-function staticPromptMessage(role: ChatRole, content: string): ChatMessage {
-    return createMessage(
-        role,
-        content,
-        { description: 'Static prompt.' }
+function isMessageList(obj: unknown): obj is Message[] {
+    const typed = obj as Message[]
+    return (
+        Array.isArray(typed)
+        && typed.reduce(
+            (allValid, message) => allValid && isMessage(message),
+            true
+        )
     )
 }
 
-function staticSystemPrompt(content: string): ChatMessage {
-    return staticPromptMessage('system', content)
+function isMessage(obj: unknown): obj is Message {
+    const typed = obj as Message
+    return (
+        typeof typed?.agent === 'string'
+        && typeof typed?.content === 'string'
+        && isMessageSource(typed?.source)
+    )
 }
 
-function staticUserPrompt(content: string): ChatMessage {
-    return staticPromptMessage('user', content)
+function isMessageSource(obj: unknown): obj is MessageSource {
+    const typed = obj as MessageSource
+    if (typeof typed?.description !== 'string') {
+        return false
+    }
+
+    if (!typed?.reasoning) {
+        return true
+    }
+
+    // Ensure reasoning is 2d list of messages.
+    return (
+        Array.isArray(typed.reasoning)
+        && typed.reasoning.reduce(
+            (allValid, attempt) =>
+                allValid && attempt.reduce(
+                    (allValid, message) => allValid && isMessage(message),
+                    true
+                )
+            ,
+            true
+        )
+    )
 }
 
 export {
-    createMessage,
-    staticUserPrompt,
-    staticSystemPrompt
+    isMessage,
+    isMessageList
 }
 
 export type {
-    Chat,
-    ChatRole,
-    ChatMessage,
-    ChatMessageSource
+    Message,
+    MessageSource
 }

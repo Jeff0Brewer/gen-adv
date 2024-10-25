@@ -1,4 +1,4 @@
-import type { Chat, ChatMessage, ChatMessageSource } from '@/lib/messages'
+import type { Message, MessageSource } from '@/lib/messages'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
 import { MdInfo } from 'react-icons/md'
@@ -6,7 +6,7 @@ import styles from '@/styles/chat-view.module.css'
 
 // Debug view for full chat history.
 interface ChatViewProps {
-    chat: Chat
+    chat: (Message | Promise<Message>)[]
 }
 
 function ChatView(
@@ -22,7 +22,7 @@ function ChatView(
 }
 
 interface MessageViewProps {
-    message: ChatMessage | Promise<ChatMessage>
+    message: Message | Promise<Message>
 }
 
 function MessageView(
@@ -31,12 +31,12 @@ function MessageView(
     const loading = message instanceof Promise
 
     return (
-        <div className={styles.message} data-role={loading ? 'loading' : message.role}>
+        <div className={styles.message} data-agent={loading ? 'loading' : message.agent}>
             {loading
                 ? <label>loading...</label>
                 : (
                     <>
-                        <label>{message.role}</label>
+                        <label>{message.agent}</label>
                         <div>
                             <p>{message.content}</p>
                             <SourceView source={message.source} />
@@ -51,7 +51,7 @@ function MessageView(
 // Displays information about source of messages to debug generation.
 // Includes full context of message rationale + generation attempt history.
 interface SourceViewProps {
-    source: ChatMessageSource
+    source: MessageSource
 }
 
 function SourceView(
@@ -78,7 +78,7 @@ function SourceView(
 // Displays full chat history for intermediate generation steps used to construct message.
 // Recursively uses `ChatView` component to display as many layers of generation as needed.
 interface ReasoningViewProps {
-    reasoning?: ChatMessage[][]
+    reasoning?: Message[][]
 }
 
 function ReasoningView(
