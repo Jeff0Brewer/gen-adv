@@ -1,12 +1,12 @@
 @keyframes load {
     0% {
-        background-color: #fff;
+        background-color: #aaa;
     }
     50% {
-        background-color: #666;
+        background-color: #444;
     }
     100% {
-        background-color: #fff;
+        background-color: #aaa;
     }
 }
 
@@ -14,24 +14,6 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-}
-
-.message[data-role="user"] {
-    --accent: #f99;
-}
-
-.message[data-role="system"] {
-    --accent: #9f9;
-}
-
-.message[data-role="assistant"] {
-    --accent: #99f;
-}
-
-.message[data-role="loading"] {
-    height: 20px;
-    animation: load 3s ease-in-out infinite;
-    text-align: left;
 }
 
 .message {
@@ -45,15 +27,18 @@
 
 .message > label {
     position: relative;
-    background-color: var(--accent);
+    background-color: #444;
     line-height: var(--label-height);
     text-align: left;
     padding: 0 5px;
 
-    color: #000;
     text-transform: uppercase;
     font-size: 0.6rem;
     font-weight: 600;
+}
+
+.loading {
+    animation: load 3s infinite;
 }
 
 .message > div {

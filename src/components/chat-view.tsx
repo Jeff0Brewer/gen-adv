@@ -28,12 +28,10 @@ interface MessageViewProps {
 function MessageView(
     { message }: MessageViewProps
 ): ReactElement {
-    const loading = message instanceof Promise
-
     return (
-        <div className={styles.message} data-agent={loading ? 'loading' : message.agent}>
-            {loading
-                ? <label>loading...</label>
+        <div className={styles.message}>
+            {message instanceof Promise
+                ? <label className={styles.loading}>loading...</label>
                 : (
                     <>
                         <label>{message.agent}</label>
