@@ -5,7 +5,7 @@ import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import Agent from '@/lib/agent'
 import { isResolved, randomChoice } from '@/lib/util'
-import { isGenreOptions, isHealthValue, isItemsList } from '@/lib/validation'
+import { isGenreOptions, isHealthValue, isItemsList, isSuccessValue } from '@/lib/validation'
 import styles from '@/styles/app.module.css'
 
 const GENRE = new Agent(
@@ -86,6 +86,29 @@ const HEALTH = new Agent(
     }
 )
 
+const EVALUATOR = new Agent(
+    'evaluator',
+    'Act as assistant to the narrator of an RPG game, your only responsibility is to determine if the player succeeds in their chosen action. Be highly realistic in your evaluations, do not let the player take implausible actions given the setting of the game. Write our answer in JSON format: { "success": /* true or false */ }',
+    {
+        useFormatted: false,
+        alwaysFormat: false
+    },
+    {
+        format: (content: string): string => {
+            const obj = JSON.parse(content) as unknown
+
+            if (!isSuccessValue(obj)) {
+                throw new Error('Success evaluation output incorrect format.')
+            }
+
+            return obj.success
+                ? 'The player succeeded in their chosen action.'
+                : 'The player failed to execute their chosen action.'
+        },
+        description: 'Success boolean from evaluation converted to natural language.'
+    }
+)
+
 function App(): ReactElement {
     const [chat, setChat] = useState<(Message | Promise<Message>)[]>([])
 
@@ -118,8 +141,8 @@ function App(): ReactElement {
                     source: { description: 'Static prompt.' }
                 }]),
                 {
-                    agent: 'user',
-                    content: 'I want to start a new game, describe my surroundings.',
+                    agent: 'evaluator',
+                    content: 'Start a new game, describe the player\'s surroundings.',
                     source: { description: 'Static prompt.' }
                 }
             ])
@@ -128,7 +151,14 @@ function App(): ReactElement {
 
         switch (chat[chat.length - 1].agent) {
             case 'user':
-                // Generate narration if last message from user.
+                // Evaluate input if last message from user.
+                setChat([
+                    ...chat,
+                    EVALUATOR.getCompletion(chat)
+                ])
+                break
+            case 'evaluator':
+                // Generate narration if last message from input evaluator.
                 setChat([
                     ...chat,
                     NARRATOR.getCompletion(chat)
