@@ -13,6 +13,11 @@ const NARRATOR = new Agent(
     'Act as narrator for an open-ended RPG game.'
 )
 
+const INVENTORY = new Agent(
+    'inventory',
+    'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Write your answer in JSON format: { "items": [/* Player\'s items here */] }'
+)
+
 function App(): ReactElement {
     const [chat, setChat] = useState<(Message | Promise<Message>)[]>([])
 
@@ -46,13 +51,24 @@ function App(): ReactElement {
                     source: { description: 'Static prompt.' }
                 }
             ])
+            return
         }
-        else if (chat[chat.length - 1].agent === 'user') {
-            // Generate narration if last message from user.
-            setChat([
-                ...chat,
-                NARRATOR.getCompletion(chat)
-            ])
+
+        switch (chat[chat.length - 1].agent) {
+            case 'user':
+                // Generate narration if last message from user.
+                setChat([
+                    ...chat,
+                    NARRATOR.getCompletion(chat)
+                ])
+                break
+            case 'narrator':
+                // Track inventory if last message from narrator.
+                setChat([
+                    ...chat,
+                    INVENTORY.getCompletion(chat)
+                ])
+                break
         }
     }, [chat])
 
