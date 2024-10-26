@@ -2,6 +2,11 @@ import type { Message } from './messages'
 import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs'
 import { getCompletion } from './generation'
 
+interface FormatOptions {
+    useFormatted: boolean
+    alwaysFormat: boolean
+}
+
 interface ContentFormatter {
     format: (c: string) => string
     description: string
@@ -10,13 +15,13 @@ interface ContentFormatter {
 class Agent {
     name: string
     prompt: Message
-    useFormatted: boolean
+    formatOptions: FormatOptions
     formatter?: ContentFormatter
 
     constructor(
         name: string,
         instruction: string,
-        useFormatted: boolean,
+        formatOptions: FormatOptions,
         formatter?: ContentFormatter
     ) {
         this.name = name
@@ -25,7 +30,7 @@ class Agent {
             content: instruction,
             source: { description: 'Agent instruction prompt.' }
         }
-        this.useFormatted = useFormatted
+        this.formatOptions = formatOptions
         this.formatter = formatter
     }
 
@@ -47,7 +52,7 @@ class Agent {
     async getCompletion(chat: Message[]): Promise<Message> {
         let messages = [this.prompt, ...chat]
 
-        if (this.useFormatted) {
+        if (this.formatOptions.useFormatted) {
             messages = messages.map(
                 message => message?.formatted ? message.formatted : message
             )
@@ -86,7 +91,9 @@ class Agent {
             }
         }
 
-        return completion
+        return this.formatOptions.alwaysFormat
+            ? completion.formatted
+            : completion
     }
 }
 
