@@ -1,18 +1,17 @@
 import type { Message } from '@/lib/messages'
+import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs'
+import Agent from './agent'
 import { randomChoice } from '@/lib/util'
 
-async function getCompletion(chat: Message[], agent: string): Promise<Message> {
+async function getCompletion(messages: ChatCompletionMessageParam[]): Promise<ChatCompletionMessageParam> {
     const res = await fetch('/api/completion', {
         method: 'POST',
         cache: 'no-cache',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            agent,
-            messages: chat
-        })
+        body: JSON.stringify({ messages })
     })
 
-    return await res.json() as Message
+    return await res.json() as ChatCompletionMessageParam
 }
 
 // Output format for genre options generation.
@@ -40,22 +39,25 @@ function isGenreOptions(obj: unknown): obj is GenreOptions {
 }
 
 async function generateGenre(retries = 3, reasoning: Message[][] = []): Promise<Message> {
-    const prompt: Message[] = [
+    const genreAgent = new Agent(
+        'genre',
+        'Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }'
+    )
+
+    const completion = await genreAgent.getCompletion([
         {
             agent: 'user',
             content: 'Provide 10 interesting genres for an RPG game. Be unique and creative.',
             source: { description: 'Static prompt.' }
-        },
-        {
-            agent: 'system',
-            content: 'Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }',
-            source: { description: 'Static prompt.' }
         }
-    ]
-    const completion = await getCompletion(prompt, 'genre')
+    ])
 
-    // Push completion to reasoning history regardless of output for debug.
-    reasoning.push([...prompt, completion])
+    if (!completion.source?.reasoning) {
+        throw new Error('generateGenre expected reasoning history on agent completion.')
+    }
+
+    // Push reasoning to history regardless of output for debug.
+    reasoning.push(...completion.source.reasoning)
 
     // Parse can easily fail if completion is not valid JSON.
     let obj

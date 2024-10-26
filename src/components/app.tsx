@@ -3,9 +3,15 @@ import type { ReactElement } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
-import { generateGenre, getCompletion } from '@/lib/generation'
+import Agent from '@/lib/agent'
+import { generateGenre } from '@/lib/generation'
 import { isResolved } from '@/lib/util'
 import styles from '@/styles/app.module.css'
+
+const NARRATOR = new Agent(
+    'narrator',
+    'Act as narrator for an open-ended RPG game.'
+)
 
 function App(): ReactElement {
     const [chat, setChat] = useState<(Message | Promise<Message>)[]>([])
@@ -32,11 +38,6 @@ function App(): ReactElement {
         if (chat.length === 0) {
             // Initialize game if chat empty.
             setChat([
-                {
-                    agent: 'system',
-                    content: 'Act as narrator for an open-ended RPG game.',
-                    source: { description: 'Static prompt.' }
-                },
                 // Generate genre separately to improve variability.
                 generateGenre(),
                 {
@@ -50,7 +51,7 @@ function App(): ReactElement {
             // Generate narration if last message from user.
             setChat([
                 ...chat,
-                getCompletion(chat, 'narrator')
+                NARRATOR.getCompletion(chat)
             ])
         }
     }, [chat])
