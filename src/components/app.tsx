@@ -5,7 +5,7 @@ import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import Agent from '@/lib/agent'
 import { isResolved, randomChoice } from '@/lib/util'
-import { isGenreOptions, isItemsList } from '@/lib/validation'
+import { isGenreOptions, isHealthValue, isItemsList } from '@/lib/validation'
 import styles from '@/styles/app.module.css'
 
 const GENRE = new Agent(
@@ -65,6 +65,27 @@ const INVENTORY = new Agent(
     }
 )
 
+const HEALTH = new Agent(
+    'health',
+    'Act as assistant to the narrator of an RPG game, your only responsibility is to track the player\'s current health. Write your answer in JSON format: { "health": /* Integer in range 0-10 */}',
+    {
+        useFormatted: false,
+        alwaysFormat: false
+    },
+    {
+        format: (content: string): string => {
+            const obj = JSON.parse(content) as unknown
+
+            if (!isHealthValue(obj)) {
+                throw new Error('Item tracking output incorrect format.')
+            }
+
+            return `The player's health is currently: ${obj.health}/10`
+        },
+        description: 'Health listed directly from generation output.'
+    }
+)
+
 function App(): ReactElement {
     const [chat, setChat] = useState<(Message | Promise<Message>)[]>([])
 
@@ -114,10 +135,11 @@ function App(): ReactElement {
                 ])
                 break
             case 'narrator':
-                // Track inventory if last message from narrator.
+                // Track player inventory and health if last message from narrator.
                 setChat([
                     ...chat,
-                    INVENTORY.getCompletion(chat)
+                    INVENTORY.getCompletion(chat),
+                    HEALTH.getCompletion(chat)
                 ])
                 break
         }
