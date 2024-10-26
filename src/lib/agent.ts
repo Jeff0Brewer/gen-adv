@@ -49,7 +49,7 @@ class Agent {
         )
     }
 
-    async getCompletion(chat: Message[]): Promise<Message> {
+    async getCompletion(chat: Message[], retries = 3, reasoning: Message[][] = []): Promise<Message> {
         let messages = [this.prompt, ...chat]
 
         if (this.formatOptions.useFormatted) {
@@ -73,21 +73,34 @@ class Agent {
 
         // Wierd copy to keep completion output in source history.
         // Reevaluate later.
-        completion.source.reasoning = [[...messages, { ...completion }]]
+        reasoning.push([...messages, { ...completion }])
 
         if (!this.formatter) {
+            completion.source.reasoning = reasoning
             return completion
         }
 
         // This will throw errors a lot.
         // TODO: Add auto retries here.
-        const formattedContent = this.formatter.format(completion.content)
+        let formattedContent = 'FORMAT ERROR'
+        try {
+            formattedContent = this.formatter.format(completion.content)
+        }
+        catch (e) {
+            console.error(e)
+            if (retries > 0) {
+                console.log(`Retrying generation for agent '${this.name}'`)
+                return this.getCompletion(chat, retries - 1, reasoning)
+            }
+        }
+
+        completion.source.reasoning = reasoning
         completion.formatted = {
             agent: this.name,
             content: formattedContent,
             source: {
                 description: this.formatter.description,
-                reasoning: completion.source.reasoning
+                reasoning: reasoning
             }
         }
 
