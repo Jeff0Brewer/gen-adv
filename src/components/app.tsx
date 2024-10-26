@@ -5,31 +5,8 @@ import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import Agent from '@/lib/agent'
 import { isResolved, randomChoice } from '@/lib/util'
+import { isGenreOptions, isItemsList } from '@/lib/validation'
 import styles from '@/styles/app.module.css'
-
-// Output format for genre options generation.
-// Responses not in this format will error.
-interface GenreOptions {
-    genres: string[]
-}
-
-function isGenreOptions(obj: unknown): obj is GenreOptions {
-    const typed = obj as GenreOptions
-
-    // Ensure obj has genres field
-    if (!typed?.genres) {
-        return false
-    }
-    const { genres } = typed
-
-    // Ensure genres field is array
-    if (!Array.isArray(genres)) {
-        return false
-    }
-
-    // Ensure array is exclusively strings
-    return genres.reduce((p, c) => p && typeof c === 'string', true)
-}
 
 const GENRE = new Agent(
     'genre',
@@ -46,7 +23,7 @@ const GENRE = new Agent(
 
             return `The genre of the game is ${genre}.`
         },
-        description: 'Genre was chosen at random from a generated list of options.'
+        description: 'Genre chosen at random from a generated list of options.'
     }
 )
 
@@ -57,7 +34,23 @@ const NARRATOR = new Agent(
 
 const INVENTORY = new Agent(
     'inventory',
-    'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Write your answer in JSON format: { "items": [/* Player\'s items here */] }'
+    'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Write your answer in JSON format: { "items": [/* Player\'s items here */] }',
+    {
+        format: (content): string => {
+            const obj = JSON.parse(content) as unknown
+
+            if (!isItemsList(obj)) {
+                throw new Error('Item tracking output incorrect format.')
+            }
+
+            if (obj.items.length === 0) {
+                return `The player is not carrying any items.`
+            }
+
+            return `The player is currently carrying these items: ${obj.items.join(', ')}`
+        },
+        description: 'Items listed directly from generation output.'
+    }
 )
 
 function App(): ReactElement {
