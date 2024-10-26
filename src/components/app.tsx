@@ -4,9 +4,51 @@ import { useCallback, useEffect, useState } from 'react'
 import ChatView from '@/components/chat-view'
 import UserInput from '@/components/user-input'
 import Agent from '@/lib/agent'
-import { generateGenre } from '@/lib/generation'
-import { isResolved } from '@/lib/util'
+import { isResolved, randomChoice } from '@/lib/util'
 import styles from '@/styles/app.module.css'
+
+// Output format for genre options generation.
+// Responses not in this format will error.
+interface GenreOptions {
+    genres: string[]
+}
+
+function isGenreOptions(obj: unknown): obj is GenreOptions {
+    const typed = obj as GenreOptions
+
+    // Ensure obj has genres field
+    if (!typed?.genres) {
+        return false
+    }
+    const { genres } = typed
+
+    // Ensure genres field is array
+    if (!Array.isArray(genres)) {
+        return false
+    }
+
+    // Ensure array is exclusively strings
+    return genres.reduce((p, c) => p && typeof c === 'string', true)
+}
+
+const GENRE = new Agent(
+    'genre',
+    'Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }',
+    {
+        format: (content): string => {
+            const obj = JSON.parse(content) as unknown
+
+            if (!isGenreOptions(obj)) {
+                throw new Error('Genre generation output incorrect format.')
+            }
+
+            const genre = randomChoice(obj.genres)
+
+            return `The genre of the game is ${genre}.`
+        },
+        description: 'Genre was chosen at random from a generated list of options.'
+    }
+)
 
 const NARRATOR = new Agent(
     'narrator',
@@ -44,7 +86,11 @@ function App(): ReactElement {
             // Initialize game if chat empty.
             setChat([
                 // Generate genre separately to improve variability.
-                generateGenre(),
+                GENRE.getCompletion([{
+                    agent: 'user',
+                    content: 'Provide 10 interesting genres for an RPG game. Be unique and creative.',
+                    source: { description: 'Static prompt.' }
+                }]),
                 {
                     agent: 'user',
                     content: 'I want to start a new game, describe my surroundings.',

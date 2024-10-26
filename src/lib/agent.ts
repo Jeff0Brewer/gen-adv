@@ -2,17 +2,33 @@ import type { Message } from './messages'
 import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs'
 import { getCompletion } from './generation'
 
+interface ContentFormatter {
+    format: (c: string) => string
+    description: string
+}
+
+const DEFAULT_FORMATTER: ContentFormatter = {
+    format: c => c,
+    description: 'Unchanged completion output.'
+}
+
 class Agent {
     name: string
     prompt: Message
+    formatter: ContentFormatter
 
-    constructor(name: string, instruction: string) {
+    constructor(
+        name: string,
+        instruction: string,
+        formatter: ContentFormatter = DEFAULT_FORMATTER
+    ) {
         this.name = name
         this.prompt = {
             agent: 'system',
             content: instruction,
             source: { description: 'Agent instruction prompt.' }
         }
+        this.formatter = formatter
     }
 
     // TODO: make readable.
@@ -50,7 +66,18 @@ class Agent {
         // Reevaluate later.
         completion.source.reasoning = [[...messages, { ...completion }]]
 
-        return completion
+        // This will throw errors a lot.
+        // TODO: Add auto retries here.
+        const formatted = this.formatter.format(completion.content)
+
+        return {
+            agent: this.name,
+            content: formatted,
+            source: {
+                description: this.formatter.description,
+                reasoning: completion.source.reasoning
+            }
+        }
     }
 }
 
