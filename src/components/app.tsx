@@ -11,8 +11,9 @@ import styles from '@/styles/app.module.css'
 const GENRE = new Agent(
     'genre',
     'Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }',
+    false,
     {
-        format: (content): string => {
+        format: (content: string): string => {
             const obj = JSON.parse(content) as unknown
 
             if (!isGenreOptions(obj)) {
@@ -29,14 +30,16 @@ const GENRE = new Agent(
 
 const NARRATOR = new Agent(
     'narrator',
-    'Act as narrator for an open-ended RPG game.'
+    'Act as narrator for an open-ended RPG game.',
+    true
 )
 
 const INVENTORY = new Agent(
     'inventory',
     'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Write your answer in JSON format: { "items": [/* Player\'s items here */] }',
+    false,
     {
-        format: (content): string => {
+        format: (content: string): string => {
             const obj = JSON.parse(content) as unknown
 
             if (!isItemsList(obj)) {

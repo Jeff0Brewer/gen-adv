@@ -7,20 +7,17 @@ interface ContentFormatter {
     description: string
 }
 
-const DEFAULT_FORMATTER: ContentFormatter = {
-    format: c => c,
-    description: 'Unchanged completion output.'
-}
-
 class Agent {
     name: string
     prompt: Message
-    formatter: ContentFormatter
+    useFormatted: boolean
+    formatter?: ContentFormatter
 
     constructor(
         name: string,
         instruction: string,
-        formatter: ContentFormatter = DEFAULT_FORMATTER
+        useFormatted: boolean,
+        formatter?: ContentFormatter
     ) {
         this.name = name
         this.prompt = {
@@ -28,6 +25,7 @@ class Agent {
             content: instruction,
             source: { description: 'Agent instruction prompt.' }
         }
+        this.useFormatted = useFormatted
         this.formatter = formatter
     }
 
@@ -47,7 +45,13 @@ class Agent {
     }
 
     async getCompletion(chat: Message[]): Promise<Message> {
-        const messages = [this.prompt, ...chat]
+        let messages = [this.prompt, ...chat]
+
+        if (this.useFormatted) {
+            messages = messages.map(
+                message => message?.formatted ? message.formatted : message
+            )
+        }
 
         const { content } = await getCompletion(this.toPerspective(messages))
         if (typeof content !== 'string') {
@@ -66,18 +70,23 @@ class Agent {
         // Reevaluate later.
         completion.source.reasoning = [[...messages, { ...completion }]]
 
+        if (!this.formatter) {
+            return completion
+        }
+
         // This will throw errors a lot.
         // TODO: Add auto retries here.
-        const formatted = this.formatter.format(completion.content)
-
-        return {
+        const formattedContent = this.formatter.format(completion.content)
+        completion.formatted = {
             agent: this.name,
-            content: formatted,
+            content: formattedContent,
             source: {
                 description: this.formatter.description,
                 reasoning: completion.source.reasoning
             }
         }
+
+        return completion
     }
 }
 

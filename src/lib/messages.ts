@@ -2,6 +2,7 @@ interface Message {
     agent: string
     content: string
     source: MessageSource
+    formatted?: Message
 }
 
 interface MessageSource {
