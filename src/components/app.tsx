@@ -88,7 +88,7 @@ const HEALTH = new Agent(
 
 const EVALUATOR = new Agent(
     'evaluator',
-    'Act as assistant to the narrator of an RPG game, your only responsibility is to determine if the player succeeds in their chosen action. Be highly realistic in your evaluations, do not let the player take implausible actions given the setting of the game. Write your answer in JSON format: { "success": /* true or false */ }',
+    'Act as assistant to the narrator of an RPG game, your only responsibility is to determine if the player succeeds in their chosen action. Be highly realistic in your evaluations, the player needs to fail sometimes for the game to be fun, but it must feel fair. Write your answer in JSON format: { "success": /* true or false */ }',
     {
         useFormatted: false,
         alwaysFormat: false
