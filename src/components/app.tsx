@@ -42,7 +42,7 @@ const NARRATOR = new Agent(
 
 const INVENTORY = new Agent(
     'inventory',
-    'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Write your answer in JSON format: { "items": [/* Player\'s items here */] }',
+    'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Include all objects, weapons, and equipment the narrator mentions the player having. Write your answer in JSON format: { "items": [/* Player\'s items here */] }',
     {
         useFormatted: false,
         alwaysFormat: false
@@ -142,7 +142,7 @@ function App(): ReactElement {
                 }]),
                 {
                     agent: 'evaluator',
-                    content: 'Start a new game, describe the player\'s surroundings.',
+                    content: 'Start a new game, describe the player\'s surroundings and equipment.',
                     source: { description: 'Static prompt.' }
                 }
             ])
