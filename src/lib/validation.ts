@@ -16,7 +16,11 @@ interface GenreOptions {
 function isGenreOptions(obj: unknown): obj is GenreOptions {
     const typed = obj as GenreOptions
 
-    return Object.hasOwn(typed, 'genres') && isStringArray(typed.genres)
+    return (
+        Object.hasOwn(typed, 'genres')
+        && Object.keys(typed).length === 1
+        && isStringArray(typed.genres)
+    )
 }
 
 interface ItemsList {
@@ -26,7 +30,11 @@ interface ItemsList {
 function isItemsList(obj: unknown): obj is ItemsList {
     const typed = obj as ItemsList
 
-    return Object.hasOwn(typed, 'items') && isStringArray(typed.items)
+    return (
+        Object.hasOwn(typed, 'items')
+        && Object.keys(typed).length === 1
+        && isStringArray(typed.items)
+    )
 }
 
 interface HealthValue {
@@ -38,6 +46,7 @@ function isHealthValue(obj: unknown): obj is HealthValue {
 
     return (
         Object.hasOwn(typed, 'health')
+        && Object.keys(typed).length === 1
         && typeof typed.health === 'number'
         && Number.isInteger(typed.health)
         && typed.health >= 0
@@ -54,6 +63,7 @@ function isSuccessValue(obj: unknown): obj is SuccessValue {
 
     return (
         Object.hasOwn(typed, 'success')
+        && Object.keys(typed).length === 1
         && typeof typed.success === 'boolean'
     )
 }
