@@ -33,7 +33,7 @@ const GENRE = new Agent(
 
 const NARRATOR = new Agent(
     'narrator',
-    'Act as narrator for an open-ended RPG game.',
+    'Act as narrator for an open-ended RPG game. Be concise but creative. Don\'t explain yourself or address the player directly, only narrate interesting scenarios for the game.',
     {
         useFormatted: true,
         alwaysFormat: false
