@@ -2,36 +2,35 @@ import type { Message } from './messages'
 import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs'
 import { getCompletion } from './generation'
 
-interface FormatOptions {
-    useFormatted: boolean
-    alwaysFormat: boolean
-}
-
 interface ContentFormatter {
     format: (c: string) => string
     description: string
 }
 
+interface AgentOptions {
+    // Names of other agents to include in completion request.
+    includedAgents?: string[]
+    // Formatter for raw completion content.
+    formatter?: ContentFormatter
+    // Should agent use formatted output of other agents.
+    useFormatted?: boolean
+    // Should agent always format output regardless of other agents' options.
+    alwaysFormat?: boolean
+}
+
 class Agent {
     name: string
     prompt: Message
-    formatOptions: FormatOptions
-    formatter?: ContentFormatter
+    options: AgentOptions
 
-    constructor(
-        name: string,
-        instruction: string,
-        formatOptions: FormatOptions,
-        formatter?: ContentFormatter
-    ) {
+    constructor(name: string, instruction: string, options: AgentOptions) {
         this.name = name
         this.prompt = {
             agent: 'system',
             content: instruction,
             source: { description: 'Agent instruction prompt.' }
         }
-        this.formatOptions = formatOptions
-        this.formatter = formatter
+        this.options = options
     }
 
     // TODO: make readable.
@@ -52,7 +51,7 @@ class Agent {
     async getCompletion(chat: Message[], retries = 3, reasoning: Message[][] = []): Promise<Message> {
         let messages = [this.prompt, ...chat]
 
-        if (this.formatOptions.useFormatted) {
+        if (this.options.useFormatted) {
             messages = messages.map(
                 message => message?.formatted ? message.formatted : message
             )
@@ -72,19 +71,17 @@ class Agent {
         }
 
         // Wierd copy to keep completion output in source history.
-        // Reevaluate later.
+        // TODO: Reevaluate.
         reasoning.push([...messages, { ...completion }])
 
-        if (!this.formatter) {
+        if (!this.options.formatter) {
             completion.source.reasoning = reasoning
             return completion
         }
 
-        // This will throw errors a lot.
-        // TODO: Add auto retries here.
         let formattedContent = 'FORMAT ERROR'
         try {
-            formattedContent = this.formatter.format(completion.content)
+            formattedContent = this.options.formatter.format(completion.content)
         }
         catch (e) {
             console.error(e)
@@ -99,12 +96,12 @@ class Agent {
             agent: this.name,
             content: formattedContent,
             source: {
-                description: this.formatter.description,
+                description: this.options.formatter.description,
                 reasoning: reasoning
             }
         }
 
-        return this.formatOptions.alwaysFormat
+        return this.options.alwaysFormat
             ? completion.formatted
             : completion
     }

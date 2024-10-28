@@ -12,22 +12,21 @@ const GENRE = new Agent(
     'genre',
     'Write your answer in JSON format: { "genres": [/* Your genre ideas here */] }',
     {
-        useFormatted: false,
-        alwaysFormat: true
-    },
-    {
-        format: (content: string): string => {
-            const obj = JSON.parse(content) as unknown
+        alwaysFormat: true,
+        formatter: {
+            format: (content: string): string => {
+                const obj = JSON.parse(content) as unknown
 
-            if (!isGenreOptions(obj)) {
-                throw new Error('Genre generation output incorrect format.')
-            }
+                if (!isGenreOptions(obj)) {
+                    throw new Error('Genre generation output incorrect format.')
+                }
 
-            const genre = randomChoice(obj.genres)
+                const genre = randomChoice(obj.genres)
 
-            return `The genre of the game is ${genre}.`
-        },
-        description: 'Genre chosen at random from a generated list of options.'
+                return `The genre of the game is ${genre}.`
+            },
+            description: 'Genre chosen at random from a generated list of options.'
+        }
     }
 )
 
@@ -35,8 +34,7 @@ const NARRATOR = new Agent(
     'narrator',
     'Act as narrator for an open-ended RPG game. Be concise but creative. Don\'t explain yourself or address the player directly, only narrate interesting scenarios for the game.',
     {
-        useFormatted: true,
-        alwaysFormat: false
+        useFormatted: true
     }
 )
 
@@ -44,24 +42,22 @@ const INVENTORY = new Agent(
     'inventory',
     'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Include all objects, weapons, and equipment the narrator mentions the player having. Write your answer in JSON format: { "items": [/* Player\'s items here */] }',
     {
-        useFormatted: false,
-        alwaysFormat: false
-    },
-    {
-        format: (content: string): string => {
-            const obj = JSON.parse(content) as unknown
+        formatter: {
+            format: (content: string): string => {
+                const obj = JSON.parse(content) as unknown
 
-            if (!isItemsList(obj)) {
-                throw new Error('Item tracking output incorrect format.')
-            }
+                if (!isItemsList(obj)) {
+                    throw new Error('Item tracking output incorrect format.')
+                }
 
-            if (obj.items.length === 0) {
-                return `The player is not carrying any items.`
-            }
+                if (obj.items.length === 0) {
+                    return `The player is not carrying any items.`
+                }
 
-            return `The player is currently carrying these items: ${obj.items.join(', ')}`
-        },
-        description: 'Items listed directly from generation output.'
+                return `The player is currently carrying these items: ${obj.items.join(', ')}`
+            },
+            description: 'Items listed directly from generation output.'
+        }
     }
 )
 
@@ -69,20 +65,18 @@ const HEALTH = new Agent(
     'health',
     'Act as assistant to the narrator of an RPG game, your only responsibility is to track the player\'s current health. Write your answer in JSON format: { "health": /* Integer in range 0-10 */}',
     {
-        useFormatted: false,
-        alwaysFormat: false
-    },
-    {
-        format: (content: string): string => {
-            const obj = JSON.parse(content) as unknown
+        formatter: {
+            format: (content: string): string => {
+                const obj = JSON.parse(content) as unknown
 
-            if (!isHealthValue(obj)) {
-                throw new Error('Item tracking output incorrect format.')
-            }
+                if (!isHealthValue(obj)) {
+                    throw new Error('Item tracking output incorrect format.')
+                }
 
-            return `The player's health is currently: ${obj.health}/10`
-        },
-        description: 'Health listed directly from generation output.'
+                return `The player's health is currently: ${obj.health}/10`
+            },
+            description: 'Health listed directly from generation output.'
+        }
     }
 )
 
@@ -90,22 +84,20 @@ const EVALUATOR = new Agent(
     'evaluator',
     'Act as assistant to the narrator of an RPG game, your only responsibility is to determine if the player succeeds in their chosen action. Be highly realistic in your evaluations, the player needs to fail sometimes for the game to be fun, but it must feel fair. Write your answer in JSON format: { "success": /* true or false */ }',
     {
-        useFormatted: false,
-        alwaysFormat: false
-    },
-    {
-        format: (content: string): string => {
-            const obj = JSON.parse(content) as unknown
+        formatter: {
+            format: (content: string): string => {
+                const obj = JSON.parse(content) as unknown
 
-            if (!isSuccessValue(obj)) {
-                throw new Error('Success evaluation output incorrect format.')
-            }
+                if (!isSuccessValue(obj)) {
+                    throw new Error('Success evaluation output incorrect format.')
+                }
 
-            return obj.success
-                ? 'The player succeeded in their chosen action.'
-                : 'The player failed to execute their chosen action.'
-        },
-        description: 'Success boolean from evaluation converted to natural language.'
+                return obj.success
+                    ? 'The player succeeded in their chosen action.'
+                    : 'The player failed to execute their chosen action.'
+            },
+            description: 'Success boolean from evaluation converted to natural language.'
+        }
     }
 )
 
