@@ -49,13 +49,25 @@ class Agent {
     }
 
     async getCompletion(chat: Message[], retries = 3, reasoning: Message[][] = []): Promise<Message> {
-        let messages = [this.prompt, ...chat]
+        let messages = [...chat]
 
         if (this.options.useFormatted) {
             messages = messages.map(
                 message => message?.formatted ? message.formatted : message
             )
         }
+
+        if (this.options.includedAgents) {
+            const agents = this.options.includedAgents
+            messages = messages.filter(
+                message => (
+                    message.agent === this.name
+                    || agents.includes(message.agent)
+                )
+            )
+        }
+
+        messages = [this.prompt, ...messages]
 
         const { content } = await getCompletion(this.toPerspective(messages))
         if (typeof content !== 'string') {
@@ -71,7 +83,6 @@ class Agent {
         }
 
         // Wierd copy to keep completion output in source history.
-        // TODO: Reevaluate.
         reasoning.push([...messages, { ...completion }])
 
         if (!this.options.formatter) {

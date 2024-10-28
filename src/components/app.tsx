@@ -42,6 +42,7 @@ const INVENTORY = new Agent(
     'inventory',
     'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Include all objects, weapons, and equipment the narrator mentions the player having. Write your answer in JSON format: { "items": [/* Player\'s items here */] }',
     {
+        includedAgents: ['user', 'narrator'],
         formatter: {
             format: (content: string): string => {
                 const obj = JSON.parse(content) as unknown
@@ -65,6 +66,7 @@ const HEALTH = new Agent(
     'health',
     'Act as assistant to the narrator of an RPG game, your only responsibility is to track the player\'s current health. Write your answer in JSON format: { "health": /* Integer in range 0-10 */}',
     {
+        includedAgents: ['user', 'narrator'],
         formatter: {
             format: (content: string): string => {
                 const obj = JSON.parse(content) as unknown
