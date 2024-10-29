@@ -64,7 +64,7 @@ const INVENTORY = new Agent(
 
 const HEALTH = new Agent(
     'health',
-    'Act as assistant to the narrator of an RPG game, your only responsibility is to track the player\'s current health. Write your answer in JSON format: { "health": /* Integer in range 0-10 */}',
+    'Act as assistant to the narrator of an RPG game, your only responsibility is to track the player\'s current health. Write your answer in JSON format: { "health": /* Integer in range 0-10 */ }',
     {
         includedAgents: ['user', 'narrator'],
         formatter: {
@@ -86,6 +86,7 @@ const EVALUATOR = new Agent(
     'evaluator',
     'Act as assistant to the narrator of an RPG game, your only responsibility is to determine if the player succeeds in their chosen action. Be highly realistic in your evaluations, the player needs to fail sometimes for the game to be fun, but it must feel fair. Write your answer in JSON format: { "success": /* true or false */ }',
     {
+        useFormatted: true,
         formatter: {
             format: (content: string): string => {
                 const obj = JSON.parse(content) as unknown
@@ -136,7 +137,7 @@ function App(): ReactElement {
                 }]),
                 {
                     agent: 'evaluator',
-                    content: 'Start a new game, describe the player\'s surroundings and equipment.',
+                    content: 'Start a new game, describe the player\'s surroundings and equipment in detail.',
                     source: { description: 'Static prompt.' }
                 }
             ])
