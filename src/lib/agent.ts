@@ -97,7 +97,7 @@ class Agent {
             formattedContent = this.options.formatter.format(completion.content)
         }
         catch (e) {
-            console.error(e)
+            console.error(`Formatting failed for agent '${this.name}'`, completion.content)
             if (retries > 0) {
                 console.log(`Retrying generation for agent '${this.name}'`)
                 return this.getCompletion(chat, retries - 1, reasoning)
