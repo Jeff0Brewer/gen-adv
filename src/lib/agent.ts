@@ -53,7 +53,9 @@ class Agent {
 
         if (this.options.useFormatted) {
             messages = messages.map(
-                message => message?.formatted ? message.formatted : message
+                message => (message?.formatted && message.agent !== this.name)
+                    ? message.formatted
+                    : message
             )
         }
 
