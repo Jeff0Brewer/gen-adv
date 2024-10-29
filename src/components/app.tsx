@@ -32,7 +32,7 @@ const GENRE = new Agent(
 
 const NARRATOR = new Agent(
     'narrator',
-    'Act as narrator for an open-ended RPG game. Be concise but creative. Don\'t explain yourself or address the player directly, only narrate interesting scenarios for the game.',
+    'Act as narrator for an open-ended RPG game. Be creative and provide enough information for the player to make interesting decisions. Don\'t explain yourself or address the player directly, only narrate the game.',
     {
         useFormatted: true
     }
@@ -40,7 +40,7 @@ const NARRATOR = new Agent(
 
 const INVENTORY = new Agent(
     'inventory',
-    'Act as assistant to the narrator of an RPG game, your only responsibility is to list items the player is currently carrying. Include all objects, weapons, and equipment the narrator mentions the player having. Write your answer in JSON format: { "items": [/* Player\'s items here */] }',
+    'Act as assistant to the narrator of an RPG game, your only responsibility is to list all items the player is currently carrying. Always respond with every item the player is carrying, even if you repeat yourself between messages. Write your answer in JSON format: { "items": [/* Player\'s items here */] }',
     {
         includedAgents: ['user', 'narrator'],
         formatter: {
